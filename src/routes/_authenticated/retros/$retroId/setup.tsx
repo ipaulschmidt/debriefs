@@ -42,7 +42,22 @@ function Setup() {
   });
   const invalidate = () => qc.invalidateQueries({ queryKey: ["retro", retroId] });
 
-  const [emails, setEmails] = useState<string[]>(["", "", ""]);
+  const DEPARTMENTS = [
+    "Sales",
+    "Marketing",
+    "Engineering",
+    "Product",
+    "Customer success",
+    "Leadership",
+    "Events / field",
+    "Other",
+  ];
+
+  const [emails, setEmails] = useState<{ email: string; dept: string }[]>([
+    { email: "", dept: "" },
+    { email: "", dept: "" },
+    { email: "", dept: "" },
+  ]);
   const [m, setM] = useState({ label: "", value: "", prior: "", notes: "" });
 
   const addPerson = useMutation({
@@ -51,13 +66,19 @@ function Setup() {
         data: {
           retroId,
           participants: emails
-            .map((e) => e.trim())
-            .filter(Boolean)
-            .map((email) => ({ email })),
+            .filter((p) => p.email.trim())
+            .map((p) => ({
+              email: p.email.trim(),
+              ...(p.dept ? { role_at_event: p.dept } : {}),
+            })),
         },
       }),
     onSuccess: () => {
-      setEmails(["", "", ""]);
+      setEmails([
+        { email: "", dept: "" },
+        { email: "", dept: "" },
+        { email: "", dept: "" },
+      ]);
       invalidate();
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "Could not add"),
@@ -104,9 +125,10 @@ function Setup() {
           <p className="eyebrow">Who was there</p>
           <h2 className="mt-2 text-3xl">People</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Just email addresses — one per box. No names needed; the interview asks each person
-            what their role was. Each person gets a private link, with no account or password, and
-            never sees anyone else's answers.
+            Just email addresses — one per box. No names needed. If you like, pick each person's
+            department from the drop-down: the interviewer uses it to make sense of their answers
+            (and won't quiz a marketer about booth logistics). Each person gets a private link,
+            with no account or password, and never sees anyone else's answers.
           </p>
 
           <div className="mt-6 space-y-3">
@@ -145,25 +167,48 @@ function Setup() {
           </div>
 
           <div className="mt-6 space-y-2">
-            {emails.map((email, i) => (
-              <Input
-                key={i}
-                type="email"
-                placeholder="name@company.com"
-                value={email}
-                onChange={(e) =>
-                  setEmails((prev) => prev.map((x, xi) => (xi === i ? e.target.value : x)))
-                }
-              />
+            {emails.map((person, i) => (
+              <div key={i} className="flex gap-2">
+                <Input
+                  type="email"
+                  placeholder="name@company.com"
+                  className="flex-1"
+                  value={person.email}
+                  onChange={(e) =>
+                    setEmails((prev) =>
+                      prev.map((x, xi) => (xi === i ? { ...x, email: e.target.value } : x)),
+                    )
+                  }
+                />
+                <select
+                  className="w-44 rounded-md border bg-background px-2 text-sm text-foreground"
+                  value={person.dept}
+                  onChange={(e) =>
+                    setEmails((prev) =>
+                      prev.map((x, xi) => (xi === i ? { ...x, dept: e.target.value } : x)),
+                    )
+                  }
+                >
+                  <option value="">Department · optional</option>
+                  {DEPARTMENTS.map((d) => (
+                    <option key={d} value={d}>
+                      {d}
+                    </option>
+                  ))}
+                </select>
+              </div>
             ))}
           </div>
           <div className="mt-3 flex gap-3">
-            <Button variant="outline" onClick={() => setEmails((prev) => [...prev, ""])}>
+            <Button
+              variant="outline"
+              onClick={() => setEmails((prev) => [...prev, { email: "", dept: "" }])}
+            >
               Add another box
             </Button>
             <Button
               onClick={() => addPerson.mutate()}
-              disabled={addPerson.isPending || !emails.some((e) => e.trim())}
+              disabled={addPerson.isPending || !emails.some((p) => p.email.trim())}
             >
               Add these people
             </Button>
