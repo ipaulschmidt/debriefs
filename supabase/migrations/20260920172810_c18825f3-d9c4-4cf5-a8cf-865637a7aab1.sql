@@ -1,0 +1,1 @@
+CREATE POLICY "creators read own retros" ON public.retros FOR SELECT TO authenticated USING (created_by = auth.uid());
