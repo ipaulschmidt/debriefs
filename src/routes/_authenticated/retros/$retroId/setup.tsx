@@ -116,7 +116,8 @@ function Setup() {
                   <div className="min-w-0 flex-1">
                     <p className="text-lg">{person.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {person.email} · {person.role_at_event}
+                      {person.email}
+                      {person.role_at_event ? ` · ${person.role_at_event}` : ""}
                     </p>
                   </div>
                   <Badge variant={person.status === "complete" ? "secondary" : "outline"}>
