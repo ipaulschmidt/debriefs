@@ -39,7 +39,7 @@ function Questions() {
 
   const [probes, setProbes] = useState<Probe[]>([]);
   useEffect(() => {
-    if (qs) setProbes(((qs.organizer_edited_probes ?? []) as unknown as Probe[]) ?? []);
+    if (qs) setProbes((qs.organizer_edited_probes ?? []) as unknown as Probe[]);
   }, [qs]);
 
   const generate = useMutation({
