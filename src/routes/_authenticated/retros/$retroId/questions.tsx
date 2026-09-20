@@ -71,6 +71,22 @@ function Questions() {
     onError: (e) => toast.error(e instanceof Error ? e.message : "Could not save"),
   });
 
+  const draft = useMutation({
+    mutationFn: async () => {
+      const probe = await draftCustomQuestion({ data: { retroId, note: note.trim() } });
+      const next = [...probes.filter((p) => p.question.trim()), probe];
+      await saveProbes({ data: { retroId, probes: next } });
+      return next;
+    },
+    onSuccess: (next) => {
+      setProbes(next);
+      setNote("");
+      qc.invalidateQueries({ queryKey: ["questionSet", retroId] });
+      toast.success("Added to the right area below.");
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Could not add that question"),
+  });
+
   return (
     <>
       <RetroNav retroId={retroId} />
