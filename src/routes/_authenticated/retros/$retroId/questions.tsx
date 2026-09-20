@@ -183,6 +183,11 @@ function Questions() {
                         Drafted from something you said in the intake: “{p.derivedFrom}” — your
                         words stay private; only this question is asked.
                       </p>
+                    ) : p.fromNote ? (
+                      <p className="mt-2 text-xs text-muted-foreground">
+                        Worded from your note: “{p.fromNote}” — your note stays private; only this
+                        question is asked.
+                      </p>
                     ) : (
                       <p className="mt-2 text-xs text-muted-foreground">Added by you.</p>
                     )}
