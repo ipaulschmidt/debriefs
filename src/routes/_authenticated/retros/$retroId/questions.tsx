@@ -2,7 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { generateProbes, getQuestionSet, saveProbes, type Probe } from "@/lib/intake.functions";
+import {
+  draftCustomQuestion,
+  generateProbes,
+  getQuestionSet,
+  saveProbes,
+  type Probe,
+} from "@/lib/intake.functions";
+import { Textarea } from "@/components/ui/textarea";
 import { SPINE, CLOSER_QUESTION } from "@/config/spine";
 import { RetroNav } from "@/components/RetroNav";
 import { Button } from "@/components/ui/button";
@@ -38,6 +45,7 @@ function Questions() {
   });
 
   const [probes, setProbes] = useState<Probe[]>([]);
+  const [note, setNote] = useState("");
   useEffect(() => {
     if (qs) setProbes((qs.organizer_edited_probes ?? []) as unknown as Probe[]);
   }, [qs]);
