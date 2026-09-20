@@ -13,6 +13,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRetrosIndexRouteImport } from './routes/_authenticated/retros/index'
+import { Route as AuthenticatedRetrosRetroIdIndexRouteImport } from './routes/_authenticated/retros/$retroId/index'
+import { Route as AuthenticatedRetrosRetroIdIntakeRouteImport } from './routes/_authenticated/retros/$retroId/intake'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,16 +36,32 @@ const AuthenticatedRetrosIndexRoute =
     path: '/retros/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedRetrosRetroIdIndexRoute =
+  AuthenticatedRetrosRetroIdIndexRouteImport.update({
+    id: '/retros/$retroId/',
+    path: '/retros/$retroId/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedRetrosRetroIdIntakeRoute =
+  AuthenticatedRetrosRetroIdIntakeRouteImport.update({
+    id: '/retros/$retroId/intake',
+    path: '/retros/$retroId/intake',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/retros/': typeof AuthenticatedRetrosIndexRoute
+  '/retros/$retroId/intake': typeof AuthenticatedRetrosRetroIdIntakeRoute
+  '/retros/$retroId/': typeof AuthenticatedRetrosRetroIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/retros': typeof AuthenticatedRetrosIndexRoute
+  '/retros/$retroId/intake': typeof AuthenticatedRetrosRetroIdIntakeRoute
+  '/retros/$retroId': typeof AuthenticatedRetrosRetroIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -51,13 +69,23 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/retros/': typeof AuthenticatedRetrosIndexRoute
+  '/_authenticated/retros/$retroId/intake': typeof AuthenticatedRetrosRetroIdIntakeRoute
+  '/_authenticated/retros/$retroId/': typeof AuthenticatedRetrosRetroIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/retros/'
+  fullPaths:
+    '/' | '/auth' | '/retros/' | '/retros/$retroId/intake' | '/retros/$retroId/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/retros'
-  id: '__root__' | '/' | '/_authenticated' | '/auth' | '/_authenticated/retros/'
+  to: '/' | '/auth' | '/retros' | '/retros/$retroId/intake' | '/retros/$retroId'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/retros/'
+    | '/_authenticated/retros/$retroId/intake'
+    | '/_authenticated/retros/$retroId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -96,15 +124,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRetrosIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/retros/$retroId/': {
+      id: '/_authenticated/retros/$retroId/'
+      path: '/retros/$retroId'
+      fullPath: '/retros/$retroId/'
+      preLoaderRoute: typeof AuthenticatedRetrosRetroIdIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/retros/$retroId/intake': {
+      id: '/_authenticated/retros/$retroId/intake'
+      path: '/retros/$retroId/intake'
+      fullPath: '/retros/$retroId/intake'
+      preLoaderRoute: typeof AuthenticatedRetrosRetroIdIntakeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedRetrosIndexRoute: typeof AuthenticatedRetrosIndexRoute
+  AuthenticatedRetrosRetroIdIntakeRoute: typeof AuthenticatedRetrosRetroIdIntakeRoute
+  AuthenticatedRetrosRetroIdIndexRoute: typeof AuthenticatedRetrosRetroIdIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedRetrosIndexRoute: AuthenticatedRetrosIndexRoute,
+  AuthenticatedRetrosRetroIdIntakeRoute: AuthenticatedRetrosRetroIdIntakeRoute,
+  AuthenticatedRetrosRetroIdIndexRoute: AuthenticatedRetrosRetroIdIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
