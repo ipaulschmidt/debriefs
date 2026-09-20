@@ -47,6 +47,14 @@ function Questions() {
 
   const [probes, setProbes] = useState<Probe[]>([]);
   const [note, setNote] = useState("");
+  const [editing, setEditing] = useState<number | null>(null);
+
+  const persist = (next: Probe[]) => {
+    setProbes(next);
+    saveProbes({ data: { retroId, probes: next.filter((p) => p.question.trim()) } })
+      .then(() => qc.invalidateQueries({ queryKey: ["questionSet", retroId] }))
+      .catch(() => toast.error("Could not save that change"));
+  };
   useEffect(() => {
     if (qs) setProbes((qs.organizer_edited_probes ?? []) as unknown as Probe[]);
   }, [qs]);
