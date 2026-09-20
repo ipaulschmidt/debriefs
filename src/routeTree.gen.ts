@@ -15,6 +15,8 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRetrosIndexRouteImport } from './routes/_authenticated/retros/index'
 import { Route as AuthenticatedRetrosRetroIdIndexRouteImport } from './routes/_authenticated/retros/$retroId/index'
 import { Route as AuthenticatedRetrosRetroIdIntakeRouteImport } from './routes/_authenticated/retros/$retroId/intake'
+import { Route as AuthenticatedRetrosRetroIdQuestionsRouteImport } from './routes/_authenticated/retros/$retroId/questions'
+import { Route as AuthenticatedRetrosRetroIdSetupRouteImport } from './routes/_authenticated/retros/$retroId/setup'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -48,12 +50,26 @@ const AuthenticatedRetrosRetroIdIntakeRoute =
     path: '/retros/$retroId/intake',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedRetrosRetroIdQuestionsRoute =
+  AuthenticatedRetrosRetroIdQuestionsRouteImport.update({
+    id: '/retros/$retroId/questions',
+    path: '/retros/$retroId/questions',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedRetrosRetroIdSetupRoute =
+  AuthenticatedRetrosRetroIdSetupRouteImport.update({
+    id: '/retros/$retroId/setup',
+    path: '/retros/$retroId/setup',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/retros/': typeof AuthenticatedRetrosIndexRoute
   '/retros/$retroId/intake': typeof AuthenticatedRetrosRetroIdIntakeRoute
+  '/retros/$retroId/questions': typeof AuthenticatedRetrosRetroIdQuestionsRoute
+  '/retros/$retroId/setup': typeof AuthenticatedRetrosRetroIdSetupRoute
   '/retros/$retroId/': typeof AuthenticatedRetrosRetroIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -61,6 +77,8 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/retros': typeof AuthenticatedRetrosIndexRoute
   '/retros/$retroId/intake': typeof AuthenticatedRetrosRetroIdIntakeRoute
+  '/retros/$retroId/questions': typeof AuthenticatedRetrosRetroIdQuestionsRoute
+  '/retros/$retroId/setup': typeof AuthenticatedRetrosRetroIdSetupRoute
   '/retros/$retroId': typeof AuthenticatedRetrosRetroIdIndexRoute
 }
 export interface FileRoutesById {
@@ -70,14 +88,29 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/retros/': typeof AuthenticatedRetrosIndexRoute
   '/_authenticated/retros/$retroId/intake': typeof AuthenticatedRetrosRetroIdIntakeRoute
+  '/_authenticated/retros/$retroId/questions': typeof AuthenticatedRetrosRetroIdQuestionsRoute
+  '/_authenticated/retros/$retroId/setup': typeof AuthenticatedRetrosRetroIdSetupRoute
   '/_authenticated/retros/$retroId/': typeof AuthenticatedRetrosRetroIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/auth' | '/retros/' | '/retros/$retroId/intake' | '/retros/$retroId/'
+    | '/'
+    | '/auth'
+    | '/retros/'
+    | '/retros/$retroId/intake'
+    | '/retros/$retroId/questions'
+    | '/retros/$retroId/setup'
+    | '/retros/$retroId/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/retros' | '/retros/$retroId/intake' | '/retros/$retroId'
+  to:
+    | '/'
+    | '/auth'
+    | '/retros'
+    | '/retros/$retroId/intake'
+    | '/retros/$retroId/questions'
+    | '/retros/$retroId/setup'
+    | '/retros/$retroId'
   id:
     | '__root__'
     | '/'
@@ -85,6 +118,8 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/retros/'
     | '/_authenticated/retros/$retroId/intake'
+    | '/_authenticated/retros/$retroId/questions'
+    | '/_authenticated/retros/$retroId/setup'
     | '/_authenticated/retros/$retroId/'
   fileRoutesById: FileRoutesById
 }
@@ -138,18 +173,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRetrosRetroIdIntakeRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/retros/$retroId/questions': {
+      id: '/_authenticated/retros/$retroId/questions'
+      path: '/retros/$retroId/questions'
+      fullPath: '/retros/$retroId/questions'
+      preLoaderRoute: typeof AuthenticatedRetrosRetroIdQuestionsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/retros/$retroId/setup': {
+      id: '/_authenticated/retros/$retroId/setup'
+      path: '/retros/$retroId/setup'
+      fullPath: '/retros/$retroId/setup'
+      preLoaderRoute: typeof AuthenticatedRetrosRetroIdSetupRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedRetrosIndexRoute: typeof AuthenticatedRetrosIndexRoute
   AuthenticatedRetrosRetroIdIntakeRoute: typeof AuthenticatedRetrosRetroIdIntakeRoute
+  AuthenticatedRetrosRetroIdQuestionsRoute: typeof AuthenticatedRetrosRetroIdQuestionsRoute
+  AuthenticatedRetrosRetroIdSetupRoute: typeof AuthenticatedRetrosRetroIdSetupRoute
   AuthenticatedRetrosRetroIdIndexRoute: typeof AuthenticatedRetrosRetroIdIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedRetrosIndexRoute: AuthenticatedRetrosIndexRoute,
   AuthenticatedRetrosRetroIdIntakeRoute: AuthenticatedRetrosRetroIdIntakeRoute,
+  AuthenticatedRetrosRetroIdQuestionsRoute:
+    AuthenticatedRetrosRetroIdQuestionsRoute,
+  AuthenticatedRetrosRetroIdSetupRoute: AuthenticatedRetrosRetroIdSetupRoute,
   AuthenticatedRetrosRetroIdIndexRoute: AuthenticatedRetrosRetroIdIndexRoute,
 }
 

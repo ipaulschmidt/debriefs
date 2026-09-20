@@ -9,9 +9,9 @@ const TABS = [
   { to: "/retros/$retroId/access-log", label: "Access log" },
 ] as const;
 
-export function RetroNav({ retroId, name }: { retroId: string; name?: string }) {
+export function RetroNav({ retroId, name }: { retroId: string; name?: string | undefined }) {
   return (
-    <div className="border-b bg-paper">
+    <div className="border-b">
       <div className="mx-auto max-w-5xl px-6 pb-3 pt-6">
         <Link to="/retros" className="eyebrow hover:underline">
           ← All retros
