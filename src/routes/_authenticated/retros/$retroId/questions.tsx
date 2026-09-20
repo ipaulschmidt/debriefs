@@ -167,17 +167,55 @@ function Questions() {
 
                 {areaProbes.map(({ p, i }) => (
                   <div key={i} className="mt-4 rounded-md border bg-card p-4">
-                    <p className="eyebrow">Extra question in this area</p>
-                    <Input
-                      className="mt-2"
-                      placeholder="Write a question — ask about a topic, don't hint at an answer"
-                      value={p.question}
-                      onChange={(e) =>
-                        setProbes((prev) =>
-                          prev.map((x, xi) => (xi === i ? { ...x, question: e.target.value } : x)),
-                        )
-                      }
-                    />
+                    <div className="flex items-start gap-2">
+                      <p className="eyebrow flex-1">Extra question in this area</p>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Edit this question"
+                        onClick={() => setEditing(editing === i ? null : i)}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Delete this question"
+                        onClick={() => {
+                          setEditing(null);
+                          persist(probes.filter((_x, xi) => xi !== i));
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    {editing === i || !p.question.trim() ? (
+                      <div className="mt-2 flex items-center gap-2">
+                        <Input
+                          placeholder="Write a question — ask about a topic, don't hint at an answer"
+                          value={p.question}
+                          autoFocus
+                          onChange={(e) =>
+                            setProbes((prev) =>
+                              prev.map((x, xi) =>
+                                xi === i ? { ...x, question: e.target.value } : x,
+                              ),
+                            )
+                          }
+                        />
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setEditing(null);
+                            persist(probes);
+                          }}
+                        >
+                          Done
+                        </Button>
+                      </div>
+                    ) : (
+                      <p className="mt-2 text-base leading-relaxed">{p.question}</p>
+                    )}
                     {p.derivedFrom ? (
                       <p className="mt-2 text-xs text-muted-foreground">
                         Drafted from something you said in the intake: “{p.derivedFrom}” — your
