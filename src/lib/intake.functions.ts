@@ -251,7 +251,21 @@ export const saveProbes = createServerFn({ method: "POST" })
         ? { approved_at: new Date().toISOString(), approved_by: context.userId }
         : {}),
     };
-    await context.supabase.from("question_sets").update(update).eq("retro_id", data.retroId);
+    const { data: existing } = await context.supabase
+      .from("question_sets")
+      .select("id")
+      .eq("retro_id", data.retroId)
+      .maybeSingle();
+
+    if (existing) {
+      await context.supabase.from("question_sets").update(update).eq("id", existing.id);
+    } else {
+      await context.supabase.from("question_sets").insert({
+        retro_id: data.retroId,
+        generated_probes: [],
+        ...update,
+      });
+    }
     if (data.approve) {
       await context.supabase.from("retros").update({ status: "collecting" }).eq("id", data.retroId);
     }
