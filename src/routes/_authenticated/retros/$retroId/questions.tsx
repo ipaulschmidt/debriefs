@@ -52,7 +52,10 @@ function Questions() {
   });
 
   const save = useMutation({
-    mutationFn: (approve: boolean) => saveProbes({ data: { retroId, probes, approve } }),
+    mutationFn: (approve: boolean) =>
+      saveProbes({
+        data: { retroId, probes: probes.filter((p) => p.question.trim()), approve },
+      }),
     onSuccess: (_r, approve) => {
       qc.invalidateQueries({ queryKey: ["questionSet", retroId] });
       toast.success(approve ? "Approved. Now add your people." : "Saved.");
@@ -65,10 +68,17 @@ function Questions() {
       <RetroNav retroId={retroId} />
       <main className="mx-auto max-w-3xl px-6 py-10">
         <p className="eyebrow">Question set</p>
-        <h2 className="mt-2 text-3xl">Eight fixed areas, plus your probes</h2>
+        <h2 className="mt-2 text-3xl">Nine fixed areas, plus anything you add</h2>
+        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+          Every person gets the same nine areas below, in this order. You can't change those. What
+          you can change is the extra questions sitting inside each area: some are drafted from
+          what you told us in the intake, and you can write your own as well. The interviewer also
+          keeps digging on its own whenever someone gives a vague answer.
+        </p>
         <div className="mt-4 rounded-md border-l-2 border-accent bg-card p-4 text-sm leading-relaxed">
           Avoid questions that suggest an answer. If a question tells someone what you think, it
-          will shape what eight people tell you back.
+          will shape what eight people tell you back. Nothing you said in the intake is ever shown
+          to your team — only the topic survives, never your opinion of it.
         </div>
 
         <div className="mt-8 flex gap-3">
@@ -76,8 +86,8 @@ function Questions() {
             {generate.isPending
               ? "Drafting…"
               : probes.length
-                ? "Re-draft probes from intake"
-                : "Draft probes from intake"}
+                ? "Re-draft extra questions from my intake"
+                : "Draft extra questions from my intake"}
           </Button>
           {qs?.approved_at ? <Badge variant="secondary">Approved</Badge> : null}
         </div>
@@ -93,7 +103,7 @@ function Questions() {
                   <span className="eyebrow">{area.id}</span>
                   <h3 className="text-2xl">{area.title}</h3>
                   <Badge variant="outline" className="ml-auto">
-                    Fixed
+                    Always asked
                   </Badge>
                 </div>
                 <p className="mt-2 text-base leading-relaxed">{area.openingQuestion}</p>
@@ -101,9 +111,10 @@ function Questions() {
 
                 {areaProbes.map(({ p, i }) => (
                   <div key={i} className="mt-4 rounded-md border bg-card p-4">
-                    <p className="eyebrow">Your probe</p>
+                    <p className="eyebrow">Extra question in this area</p>
                     <Input
                       className="mt-2"
+                      placeholder="Write a question — ask about a topic, don't hint at an answer"
                       value={p.question}
                       onChange={(e) =>
                         setProbes((prev) =>
@@ -111,19 +122,38 @@ function Questions() {
                         )
                       }
                     />
-                    <p className="mt-2 text-xs text-muted-foreground">
-                      From what you said: “{p.derivedFrom}”
-                    </p>
+                    {p.derivedFrom ? (
+                      <p className="mt-2 text-xs text-muted-foreground">
+                        Drafted from something you said in the intake: “{p.derivedFrom}” — your
+                        words stay private; only this question is asked.
+                      </p>
+                    ) : (
+                      <p className="mt-2 text-xs text-muted-foreground">Added by you.</p>
+                    )}
                     <Button
                       variant="ghost"
                       size="sm"
                       className="mt-2"
                       onClick={() => setProbes((prev) => prev.filter((_x, xi) => xi !== i))}
                     >
-                      Remove probe
+                      Remove question
                     </Button>
                   </div>
                 ))}
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-4"
+                  onClick={() =>
+                    setProbes((prev) => [
+                      ...prev,
+                      { question: "", spineArea: area.id, derivedFrom: "" },
+                    ])
+                  }
+                >
+                  Add my own question here
+                </Button>
               </section>
             );
           })}
