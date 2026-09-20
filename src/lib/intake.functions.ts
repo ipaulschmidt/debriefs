@@ -119,7 +119,6 @@ export type IntakeSummary = {
   investments: string[];
   concerns: string[];
   decisions_pending: string[];
-  sensitive_areas: string[];
   people_mentioned: { name: string; role_at_event: string }[];
 };
 
@@ -141,7 +140,7 @@ export const finishIntake = createServerFn({ method: "POST" })
     const summary = await runJson<IntakeSummary>({
       system:
         "You summarize a private organizer intake interview for an event retro into structured context. Be faithful; do not invent. If goals were never written down before the event, set goals_were_documented to false.",
-      schemaHint: `{"goals":["..."],"goals_were_documented":true,"what_changed":["..."],"investments":["..."],"concerns":["..."],"decisions_pending":["..."],"sensitive_areas":["..."],"people_mentioned":[{"name":"...","role_at_event":"..."}]}`,
+      schemaHint: `{"goals":["..."],"goals_were_documented":true,"what_changed":["..."],"investments":["..."],"concerns":["..."],"decisions_pending":["..."],"people_mentioned":[{"name":"...","role_at_event":"..."}]}`,
       messages: [{ role: "user", content: transcript }],
     });
 
