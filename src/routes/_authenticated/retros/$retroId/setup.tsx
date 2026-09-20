@@ -125,9 +125,10 @@ function Setup() {
           <p className="eyebrow">Who was there</p>
           <h2 className="mt-2 text-3xl">People</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Just email addresses — one per box. No names needed; the interview asks each person
-            what their role was. Each person gets a private link, with no account or password, and
-            never sees anyone else's answers.
+            Just email addresses — one per box. No names needed. If you like, pick each person's
+            department from the drop-down: the interviewer uses it to make sense of their answers
+            (and won't quiz a marketer about booth logistics). Each person gets a private link,
+            with no account or password, and never sees anyone else's answers.
           </p>
 
           <div className="mt-6 space-y-3">
