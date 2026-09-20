@@ -42,13 +42,22 @@ function Setup() {
   });
   const invalidate = () => qc.invalidateQueries({ queryKey: ["retro", retroId] });
 
-  const [p, setP] = useState({ name: "", email: "", role_at_event: "" });
+  const [emails, setEmails] = useState<string[]>(["", "", ""]);
   const [m, setM] = useState({ label: "", value: "", prior: "", notes: "" });
 
   const addPerson = useMutation({
-    mutationFn: () => upsertParticipants({ data: { retroId, participants: [p] } }),
+    mutationFn: () =>
+      upsertParticipants({
+        data: {
+          retroId,
+          participants: emails
+            .map((e) => e.trim())
+            .filter(Boolean)
+            .map((email) => ({ email })),
+        },
+      }),
     onSuccess: () => {
-      setP({ name: "", email: "", role_at_event: "" });
+      setEmails(["", "", ""]);
       invalidate();
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "Could not add"),
