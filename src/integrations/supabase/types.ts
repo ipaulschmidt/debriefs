@@ -14,13 +14,439 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      action_items: {
+        Row: {
+          carried_from_retro_id: string | null
+          created_at: string
+          description: string
+          due_date: string | null
+          id: string
+          owner_name: string | null
+          retro_id: string
+          status: string
+        }
+        Insert: {
+          carried_from_retro_id?: string | null
+          created_at?: string
+          description: string
+          due_date?: string | null
+          id?: string
+          owner_name?: string | null
+          retro_id: string
+          status?: string
+        }
+        Update: {
+          carried_from_retro_id?: string | null
+          created_at?: string
+          description?: string
+          due_date?: string | null
+          id?: string
+          owner_name?: string | null
+          retro_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "action_items_carried_from_retro_id_fkey"
+            columns: ["carried_from_retro_id"]
+            isOneToOne: false
+            referencedRelation: "retros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "action_items_retro_id_fkey"
+            columns: ["retro_id"]
+            isOneToOne: false
+            referencedRelation: "retros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      attribution_access_log: {
+        Row: {
+          admin_user_id: string
+          created_at: string
+          id: string
+          reason_text: string
+          retro_id: string
+          target_id: string | null
+          target_type: string
+        }
+        Insert: {
+          admin_user_id: string
+          created_at?: string
+          id?: string
+          reason_text: string
+          retro_id: string
+          target_id?: string | null
+          target_type: string
+        }
+        Update: {
+          admin_user_id?: string
+          created_at?: string
+          id?: string
+          reason_text?: string
+          retro_id?: string
+          target_id?: string | null
+          target_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attribution_access_log_retro_id_fkey"
+            columns: ["retro_id"]
+            isOneToOne: false
+            referencedRelation: "retros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interview_turns: {
+        Row: {
+          answer_mode: string
+          answer_quality: string | null
+          answer_text: string | null
+          audio_url: string | null
+          created_at: string
+          id: string
+          marked_sensitive: boolean
+          participant_id: string
+          probe_type: string | null
+          question_text: string
+          sequence: number
+          spine_area: number | null
+          was_probe: boolean
+        }
+        Insert: {
+          answer_mode?: string
+          answer_quality?: string | null
+          answer_text?: string | null
+          audio_url?: string | null
+          created_at?: string
+          id?: string
+          marked_sensitive?: boolean
+          participant_id: string
+          probe_type?: string | null
+          question_text: string
+          sequence: number
+          spine_area?: number | null
+          was_probe?: boolean
+        }
+        Update: {
+          answer_mode?: string
+          answer_quality?: string | null
+          answer_text?: string | null
+          audio_url?: string | null
+          created_at?: string
+          id?: string
+          marked_sensitive?: boolean
+          participant_id?: string
+          probe_type?: string | null
+          question_text?: string
+          sequence?: number
+          spine_area?: number | null
+          was_probe?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interview_turns_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "participants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizer_intake_turns: {
+        Row: {
+          answer_mode: string
+          answer_text: string | null
+          audio_url: string | null
+          created_at: string
+          id: string
+          question_text: string
+          retro_id: string
+          sequence: number
+        }
+        Insert: {
+          answer_mode?: string
+          answer_text?: string | null
+          audio_url?: string | null
+          created_at?: string
+          id?: string
+          question_text: string
+          retro_id: string
+          sequence: number
+        }
+        Update: {
+          answer_mode?: string
+          answer_text?: string | null
+          audio_url?: string | null
+          created_at?: string
+          id?: string
+          question_text?: string
+          retro_id?: string
+          sequence?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organizer_intake_turns_retro_id_fkey"
+            columns: ["retro_id"]
+            isOneToOne: false
+            referencedRelation: "retros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      participants: {
+        Row: {
+          completed_at: string | null
+          completeness_score: number | null
+          created_at: string
+          email: string
+          id: string
+          invite_token: string
+          low_completeness_flag: boolean
+          name: string
+          retro_id: string
+          role_at_event: string | null
+          status: string
+        }
+        Insert: {
+          completed_at?: string | null
+          completeness_score?: number | null
+          created_at?: string
+          email: string
+          id?: string
+          invite_token?: string
+          low_completeness_flag?: boolean
+          name: string
+          retro_id: string
+          role_at_event?: string | null
+          status?: string
+        }
+        Update: {
+          completed_at?: string | null
+          completeness_score?: number | null
+          created_at?: string
+          email?: string
+          id?: string
+          invite_token?: string
+          low_completeness_flag?: boolean
+          name?: string
+          retro_id?: string
+          role_at_event?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "participants_retro_id_fkey"
+            columns: ["retro_id"]
+            isOneToOne: false
+            referencedRelation: "retros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      question_sets: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          generated_probes: Json
+          id: string
+          organizer_edited_probes: Json | null
+          retro_id: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          generated_probes?: Json
+          id?: string
+          organizer_edited_probes?: Json | null
+          retro_id: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          generated_probes?: Json
+          id?: string
+          organizer_edited_probes?: Json | null
+          retro_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_sets_retro_id_fkey"
+            columns: ["retro_id"]
+            isOneToOne: false
+            referencedRelation: "retros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reports: {
+        Row: {
+          generated_at: string
+          id: string
+          retro_id: string
+          synthesis_json: Json
+          version: number
+        }
+        Insert: {
+          generated_at?: string
+          id?: string
+          retro_id: string
+          synthesis_json: Json
+          version?: number
+        }
+        Update: {
+          generated_at?: string
+          id?: string
+          retro_id?: string
+          synthesis_json?: Json
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_retro_id_fkey"
+            columns: ["retro_id"]
+            isOneToOne: false
+            referencedRelation: "retros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      retro_admins: {
+        Row: {
+          created_at: string
+          id: string
+          retro_id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          retro_id: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          retro_id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "retro_admins_retro_id_fkey"
+            columns: ["retro_id"]
+            isOneToOne: false
+            referencedRelation: "retros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      retro_metrics: {
+        Row: {
+          created_at: string
+          id: string
+          label: string
+          notes: string | null
+          prior_year_value: string | null
+          retro_id: string
+          value: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label: string
+          notes?: string | null
+          prior_year_value?: string | null
+          retro_id: string
+          value?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string
+          notes?: string | null
+          prior_year_value?: string | null
+          retro_id?: string
+          value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "retro_metrics_retro_id_fkey"
+            columns: ["retro_id"]
+            isOneToOne: false
+            referencedRelation: "retros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      retros: {
+        Row: {
+          created_at: string
+          created_by: string
+          event_date: string | null
+          id: string
+          intake_summary: Json | null
+          interview_deadline: string | null
+          name: string
+          previous_retro_id: string | null
+          status: string
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          event_date?: string | null
+          id?: string
+          intake_summary?: Json | null
+          interview_deadline?: string | null
+          name: string
+          previous_retro_id?: string | null
+          status?: string
+          type?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          event_date?: string | null
+          id?: string
+          intake_summary?: Json | null
+          interview_deadline?: string | null
+          name?: string
+          previous_retro_id?: string | null
+          status?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "retros_previous_retro_id_fkey"
+            columns: ["previous_retro_id"]
+            isOneToOne: false
+            referencedRelation: "retros"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_retro_role: {
+        Args: { _retro_id: string; _role: string; _user_id: string }
+        Returns: boolean
+      }
+      is_retro_member: {
+        Args: { _retro_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
