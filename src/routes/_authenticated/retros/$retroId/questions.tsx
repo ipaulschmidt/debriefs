@@ -2,7 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { generateProbes, getQuestionSet, saveProbes, type Probe } from "@/lib/intake.functions";
+import {
+  draftCustomQuestion,
+  generateProbes,
+  getQuestionSet,
+  saveProbes,
+  type Probe,
+} from "@/lib/intake.functions";
+import { Textarea } from "@/components/ui/textarea";
 import { SPINE, CLOSER_QUESTION } from "@/config/spine";
 import { RetroNav } from "@/components/RetroNav";
 import { Button } from "@/components/ui/button";
@@ -38,6 +45,7 @@ function Questions() {
   });
 
   const [probes, setProbes] = useState<Probe[]>([]);
+  const [note, setNote] = useState("");
   useEffect(() => {
     if (qs) setProbes((qs.organizer_edited_probes ?? []) as unknown as Probe[]);
   }, [qs]);
@@ -63,6 +71,22 @@ function Questions() {
     onError: (e) => toast.error(e instanceof Error ? e.message : "Could not save"),
   });
 
+  const draft = useMutation({
+    mutationFn: async () => {
+      const probe = await draftCustomQuestion({ data: { retroId, note: note.trim() } });
+      const next = [...probes.filter((p) => p.question.trim()), probe];
+      await saveProbes({ data: { retroId, probes: next } });
+      return next;
+    },
+    onSuccess: (next) => {
+      setProbes(next);
+      setNote("");
+      qc.invalidateQueries({ queryKey: ["questionSet", retroId] });
+      toast.success("Added to the right area below.");
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Could not add that question"),
+  });
+
   return (
     <>
       <RetroNav retroId={retroId} />
@@ -81,16 +105,48 @@ function Questions() {
           to your team — only the topic survives, never your opinion of it.
         </div>
 
-        <div className="mt-8 flex gap-3">
-          <Button onClick={() => generate.mutate()} disabled={generate.isPending}>
+        <div className="mt-8 rounded-md border bg-card p-4">
+          <p className="eyebrow">Anything else you want asked?</p>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            Write it however it comes out — “get feedback on the party”, “should we do the dinner
+            again”. We'll word it neutrally so it doesn't hint at your view, and drop it into the
+            right area.
+          </p>
+          <Textarea
+            className="mt-3"
+            rows={3}
+            placeholder="e.g. I want to know what people thought of the party and whether it's worth doing again"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+          />
+          <Button
+            className="mt-3"
+            onClick={() => draft.mutate()}
+            disabled={draft.isPending || !note.trim()}
+          >
+            {draft.isPending ? "Writing the question…" : "Add this question"}
+          </Button>
+        </div>
+
+        <div className="mt-6 flex flex-wrap items-center gap-3">
+          <Button
+            variant="outline"
+            onClick={() => generate.mutate()}
+            disabled={generate.isPending}
+          >
             {generate.isPending
               ? "Drafting…"
               : probes.length
-                ? "Re-draft extra questions from my intake"
+                ? "Redo the questions from my intake"
                 : "Draft extra questions from my intake"}
           </Button>
           {qs?.approved_at ? <Badge variant="secondary">Approved</Badge> : null}
         </div>
+        <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+          Use this after you go back and add more to your intake conversation: it rewrites the
+          intake-drafted questions from scratch using everything you've said. Questions you wrote
+          or added yourself are kept.
+        </p>
 
         <div className="mt-10 space-y-8">
           {SPINE.map((area) => {
@@ -126,6 +182,11 @@ function Questions() {
                       <p className="mt-2 text-xs text-muted-foreground">
                         Drafted from something you said in the intake: “{p.derivedFrom}” — your
                         words stay private; only this question is asked.
+                      </p>
+                    ) : p.fromNote ? (
+                      <p className="mt-2 text-xs text-muted-foreground">
+                        Worded from your note: “{p.fromNote}” — your note stays private; only this
+                        question is asked.
                       </p>
                     ) : (
                       <p className="mt-2 text-xs text-muted-foreground">Added by you.</p>
