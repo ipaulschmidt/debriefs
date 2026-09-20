@@ -103,7 +103,7 @@ function Interview() {
           <div className="flex items-baseline justify-between text-xs text-muted-foreground">
             <span>
               Section {currentArea} of {SPINE.length}
-              {SPINE[currentArea - 1] ? ` · ${SPINE[currentArea - 1].title}` : ""}
+              {currentAreaTitle ? ` · ${currentAreaTitle}` : ""}
             </span>
             <span>about {minutesLeft} min to go</span>
           </div>
