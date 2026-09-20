@@ -205,11 +205,12 @@ export const saveProbes = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { retroId: string; probes: Probe[]; approve?: boolean }) => input)
   .handler(async ({ data, context }) => {
-    const update: Record<string, unknown> = { organizer_edited_probes: data.probes };
-    if (data.approve) {
-      update["approved_at"] = new Date().toISOString();
-      update["approved_by"] = context.userId;
-    }
+    const update = {
+      organizer_edited_probes: data.probes,
+      ...(data.approve
+        ? { approved_at: new Date().toISOString(), approved_by: context.userId }
+        : {}),
+    };
     await context.supabase.from("question_sets").update(update).eq("retro_id", data.retroId);
     if (data.approve) {
       await context.supabase.from("retros").update({ status: "collecting" }).eq("id", data.retroId);
