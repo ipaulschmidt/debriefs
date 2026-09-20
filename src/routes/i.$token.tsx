@@ -2,12 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import { getInterview, interviewNext, setSensitive } from "@/lib/interview.functions";
+import { getInterview, interviewNext } from "@/lib/interview.functions";
 import { SPINE } from "@/config/spine";
 import { VoiceAnswer } from "@/components/VoiceAnswer";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 
 export const Route = createFileRoute("/i/$token")({
   ssr: false,
@@ -35,7 +33,6 @@ function Interview() {
   const qc = useQueryClient();
   const [draft, setDraft] = useState("");
   const [mode, setMode] = useState<"text" | "voice">("text");
-  const [sensitive, setSensitiveFlag] = useState(false);
   const [closing, setClosing] = useState<string | null>(null);
   const [started, setStarted] = useState(false);
 
@@ -53,22 +50,15 @@ function Interview() {
       interviewNext({
         data: {
           token,
-          ...(draft ? { answer: draft, answerMode: mode, markSensitive: sensitive } : {}),
+          ...(draft ? { answer: draft, answerMode: mode } : {}),
         },
       }),
     onSuccess: (res) => {
       setDraft("");
-      setSensitiveFlag(false);
       if (res.done) setClosing(res.closing ?? "That's everything. Thank you.");
       qc.invalidateQueries({ queryKey: ["interview", token] });
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "Something went wrong"),
-  });
-
-  const flag = useMutation({
-    mutationFn: (v: { turnId: string; sensitive: boolean }) =>
-      setSensitive({ data: { token, ...v } }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["interview", token] }),
   });
 
   if (isLoading) {
@@ -133,12 +123,12 @@ function Interview() {
                 </li>
                 <li>Your colleagues never see anyone's individual answers, including yours.</li>
                 <li>
-                  An admin can review individual responses for a specific reason, and every one of
-                  those reviews is recorded.
+                  So be straight with me. Specific, honest answers are the whole point — there is
+                  nothing to soften here.
                 </li>
                 <li>
-                  You can mark any answer as sensitive. It will never be quoted, and it is flagged
-                  so anyone reviewing handles it with care.
+                  An admin can review individual responses for a specific reason, and every one of
+                  those reviews is recorded.
                 </li>
               </ul>
               <p>
@@ -173,16 +163,6 @@ function Interview() {
             {t.answer_text ? (
               <div className="rounded-md border bg-card p-3">
                 <p className="text-sm leading-relaxed text-muted-foreground">{t.answer_text}</p>
-                <div className="mt-2 flex items-center gap-2">
-                  <Switch
-                    id={`s-${t.id}`}
-                    checked={!!t.marked_sensitive}
-                    onCheckedChange={(v) => flag.mutate({ turnId: t.id, sensitive: v })}
-                  />
-                  <Label htmlFor={`s-${t.id}`} className="text-xs text-muted-foreground">
-                    Mark this answer as sensitive
-                  </Label>
-                </div>
               </div>
             ) : null}
           </div>
@@ -209,12 +189,6 @@ function Interview() {
               }}
               disabled={next.isPending}
             />
-            <div className="flex items-center gap-2">
-              <Switch id="sens" checked={sensitive} onCheckedChange={setSensitiveFlag} />
-              <Label htmlFor="sens" className="text-xs text-muted-foreground">
-                Mark this answer as sensitive — never quoted, handled with extra care
-              </Label>
-            </div>
             <Button onClick={() => next.mutate()} disabled={!draft.trim() || next.isPending}>
               {next.isPending ? "Thinking…" : "Send answer"}
             </Button>

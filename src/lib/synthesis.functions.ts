@@ -67,7 +67,7 @@ export const generateReport = createServerFn({ method: "POST" })
     const ids = (participants ?? []).map((p) => p.id);
     const { data: turns } = await supabaseAdmin
       .from("interview_turns")
-      .select("participant_id, spine_area, question_text, answer_text, answer_quality, marked_sensitive")
+      .select("participant_id, spine_area, question_text, answer_text, answer_quality")
       .in("participant_id", ids.length ? ids : ["00000000-0000-0000-0000-000000000000"])
       .order("sequence");
 
@@ -79,7 +79,7 @@ export const generateReport = createServerFn({ method: "POST" })
 ${own
   .map(
     (t) =>
-      `- [area ${t.spine_area}, quality ${t.answer_quality ?? "unrated"}${t.marked_sensitive ? ", MARKED SENSITIVE — never quote or surface" : ""}] Q: ${t.question_text}\n  A: ${t.answer_text}`,
+      `- [area ${t.spine_area}, quality ${t.answer_quality ?? "unrated"}] Q: ${t.question_text}\n  A: ${t.answer_text}`,
   )
   .join("\n")}`;
       })

@@ -12,7 +12,6 @@ export type PublicTurn = {
   spine_area: number | null;
   question_text: string;
   answer_text: string | null;
-  marked_sensitive: boolean;
   was_probe: boolean;
 };
 
@@ -45,7 +44,7 @@ async function loadContext(token: string) {
 
   const { data: turns } = await supabaseAdmin
     .from("interview_turns")
-    .select("id, sequence, spine_area, question_text, answer_text, answer_quality, marked_sensitive, was_probe")
+    .select("id, sequence, spine_area, question_text, answer_text, answer_quality, was_probe")
     .eq("participant_id", participant.id)
     .order("sequence");
 
@@ -73,7 +72,6 @@ export const interviewNext = createServerFn({ method: "POST" })
       token: string;
       answer?: string;
       answerMode?: "text" | "voice";
-      markSensitive?: boolean;
     }) => input,
   )
   .handler(async ({ data }) => {
@@ -94,7 +92,7 @@ export const interviewNext = createServerFn({ method: "POST" })
           spine_area: 1,
           question_text: SPINE[0]!.openingQuestion,
         })
-        .select("id, sequence, spine_area, question_text, answer_text, marked_sensitive, was_probe")
+        .select("id, sequence, spine_area, question_text, answer_text, was_probe")
         .single();
       await supabaseAdmin
         .from("participants")
@@ -110,11 +108,9 @@ export const interviewNext = createServerFn({ method: "POST" })
         .update({
           answer_text: data.answer,
           answer_mode: data.answerMode ?? "text",
-          marked_sensitive: !!data.markSensitive,
         })
         .eq("id", last.id);
       last.answer_text = data.answer;
-      last.marked_sensitive = !!data.markSensitive;
     }
 
     const history = turns
@@ -200,7 +196,7 @@ Assess the last answer, then choose your action and write the next question.`,
         was_probe: result.action === "probe",
         probe_type: result.action === "probe" ? result.probeType : null,
       })
-      .select("id, sequence, spine_area, question_text, answer_text, marked_sensitive, was_probe")
+      .select("id, sequence, spine_area, question_text, answer_text, was_probe")
       .single();
 
     return { done: false, turn: inserted as PublicTurn };
@@ -236,14 +232,3 @@ async function finalizeInterview(
     .eq("id", participantId);
 }
 
-export const setSensitive = createServerFn({ method: "POST" })
-  .inputValidator((input: { token: string; turnId: string; sensitive: boolean }) => input)
-  .handler(async ({ data }) => {
-    const { supabaseAdmin, participant } = await loadContext(data.token);
-    await supabaseAdmin
-      .from("interview_turns")
-      .update({ marked_sensitive: data.sensitive })
-      .eq("id", data.turnId)
-      .eq("participant_id", participant.id);
-    return { ok: true };
-  });

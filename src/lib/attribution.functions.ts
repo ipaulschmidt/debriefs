@@ -63,7 +63,7 @@ export const revealFinding = createServerFn({ method: "POST" })
       .in("id", ids);
     const { data: turns } = await supabaseAdmin
       .from("interview_turns")
-      .select("participant_id, question_text, answer_text, answer_quality, marked_sensitive")
+      .select("participant_id, question_text, answer_text, answer_quality")
       .in("participant_id", ids)
       .order("sequence");
 
@@ -77,9 +77,8 @@ export const revealFinding = createServerFn({ method: "POST" })
           .slice(0, 6)
           .map((t) => ({
             question: t.question_text,
-            answer: t.marked_sensitive ? null : t.answer_text,
+            answer: t.answer_text,
             quality: t.answer_quality,
-            sensitive: t.marked_sensitive,
           })),
       })),
     };
@@ -114,7 +113,7 @@ export const revealTranscript = createServerFn({ method: "POST" })
 
     const { data: turns } = await supabaseAdmin
       .from("interview_turns")
-      .select("sequence, spine_area, question_text, answer_text, answer_quality, marked_sensitive, was_probe, probe_type")
+      .select("sequence, spine_area, question_text, answer_text, answer_quality, was_probe, probe_type")
       .eq("participant_id", data.participantId)
       .order("sequence");
 

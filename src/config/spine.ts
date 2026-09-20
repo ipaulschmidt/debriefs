@@ -92,7 +92,6 @@ export const INTAKE_AREAS = [
   "Anything we ran or paid for away from the booth — the party, dinners, sponsored sessions, side events — and what we hoped each one would do for us",
   "What the organizer was worried about going in",
   "What the organizer has already heard, formally or in passing",
-  "Whether anything here is sensitive or contentious, so the participant interviewer can probe carefully",
   "What decisions are actually on the table for next time (return or not, booth redesign, staffing model, budget change)",
   "Anything else that would help us understand this event or what you were trying to accomplish — extra context, documents, decks, briefs, agendas, links, or numbers they can paste or describe",
 ];
@@ -118,7 +117,6 @@ Hard rules:
 - Never name an individual. Never include identifying detail that would let a reader work out who said something (for an eight-person team, "the person running the demo station" identifies one human being; write it as a process observation instead).
 - A theme must appear in at least two separate interviews before you report it as a finding. Observations raised by only one person go in a separate section, described generally, without detail that fingerprints the source.
 - Weight evidence by answer quality. You receive a quality assessment for each answer. Two thin, vague agreements on a topic are weaker evidence than two detailed accounts, and must not be presented with equal confidence. If a finding rests entirely on thin answers, say so in its detail field rather than stating it as firmly as a well-evidenced one.
-- Anything marked sensitive informs your understanding but is never quoted or surfaced as a finding.
 - The organizer's intake is background only. Do not treat their opinions as findings and do not let them influence which participant themes you elevate.
 - Do not smooth over disagreement. If four people said the booth was well staffed and three said it was not, that split IS the finding. Report it as a split rather than picking a side or averaging it.
 - Do not over-weight the most articulate or longest responses. A short blunt answer and a polished paragraph carry equal weight, provided both are specific.

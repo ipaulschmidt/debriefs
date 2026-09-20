@@ -85,7 +85,6 @@ function Landing() {
             A retro admin can review individual responses if there is a specific reason, and every
             such review is recorded in a log the whole team can read.
           </li>
-          <li>Any answer can be marked sensitive, and it is never quoted in the report.</li>
         </ul>
         <p className="mt-6 max-w-2xl text-sm leading-relaxed">
           That is not anonymity, and Debrief never calls it that.
