@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import { getInterview, interviewNext, setSensitive } from "@/lib/interview.functions";
+import { SPINE } from "@/config/spine";
 import { VoiceAnswer } from "@/components/VoiceAnswer";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
