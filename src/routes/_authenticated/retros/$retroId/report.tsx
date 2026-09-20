@@ -42,7 +42,7 @@ export const Route = createFileRoute("/_authenticated/retros/$retroId/report")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: ReportPage;
+  component: ReportPage,
 });
 
 type RevealTarget = { section: string; index: number; label: string };
