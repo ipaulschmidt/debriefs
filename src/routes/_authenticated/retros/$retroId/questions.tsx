@@ -81,16 +81,48 @@ function Questions() {
           to your team — only the topic survives, never your opinion of it.
         </div>
 
-        <div className="mt-8 flex gap-3">
-          <Button onClick={() => generate.mutate()} disabled={generate.isPending}>
+        <div className="mt-8 rounded-md border bg-card p-4">
+          <p className="eyebrow">Anything else you want asked?</p>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            Write it however it comes out — “get feedback on the party”, “should we do the dinner
+            again”. We'll word it neutrally so it doesn't hint at your view, and drop it into the
+            right area.
+          </p>
+          <Textarea
+            className="mt-3"
+            rows={3}
+            placeholder="e.g. I want to know what people thought of the party and whether it's worth doing again"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+          />
+          <Button
+            className="mt-3"
+            onClick={() => draft.mutate()}
+            disabled={draft.isPending || !note.trim()}
+          >
+            {draft.isPending ? "Writing the question…" : "Add this question"}
+          </Button>
+        </div>
+
+        <div className="mt-6 flex flex-wrap items-center gap-3">
+          <Button
+            variant="outline"
+            onClick={() => generate.mutate()}
+            disabled={generate.isPending}
+          >
             {generate.isPending
               ? "Drafting…"
               : probes.length
-                ? "Re-draft extra questions from my intake"
+                ? "Redo the questions from my intake"
                 : "Draft extra questions from my intake"}
           </Button>
           {qs?.approved_at ? <Badge variant="secondary">Approved</Badge> : null}
         </div>
+        <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+          Use this after you go back and add more to your intake conversation: it rewrites the
+          intake-drafted questions from scratch using everything you've said. Questions you wrote
+          or added yourself are kept.
+        </p>
 
         <div className="mt-10 space-y-8">
           {SPINE.map((area) => {
