@@ -89,6 +89,7 @@ function Interview() {
   const done = data.participant.status === "complete" || closing;
 
   const currentArea = Math.min(Math.max(current?.spine_area ?? 1, 1), SPINE.length);
+  const currentAreaTitle = SPINE[currentArea - 1]?.title ?? "";
   const minutesLeft = Math.max(1, Math.round((SPINE.length - currentArea + 1) * 1.2));
   const showProgress = (started || turns.length > 0) && !done;
 
