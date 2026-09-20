@@ -104,22 +104,32 @@ export const upsertParticipants = createServerFn({ method: "POST" })
   .inputValidator(
     (input: {
       retroId: string;
-      participants: { id?: string; name: string; email: string; role_at_event: string }[];
+      participants: { id?: string; name?: string; email: string; role_at_event?: string }[];
     }) => input,
   )
   .handler(async ({ data, context }) => {
+    // Name is optional in the UI: an email address on its own is enough to invite someone.
+    const labelFor = (p: { name?: string; email: string }) =>
+      p.name?.trim() || p.email.split("@")[0] || p.email;
+
     for (const p of data.participants) {
+      const email = p.email.trim();
+      if (!email) continue;
       if (p.id) {
         await context.supabase
           .from("participants")
-          .update({ name: p.name, email: p.email, role_at_event: p.role_at_event })
+          .update({
+            name: labelFor(p),
+            email,
+            role_at_event: p.role_at_event?.trim() || null,
+          })
           .eq("id", p.id);
       } else {
         await context.supabase.from("participants").insert({
           retro_id: data.retroId,
-          name: p.name,
-          email: p.email,
-          role_at_event: p.role_at_event,
+          name: labelFor(p),
+          email,
+          role_at_event: p.role_at_event?.trim() || null,
         });
       }
     }

@@ -40,14 +40,22 @@ export const SPINE: SpineArea[] = [
   },
   {
     id: 5,
-    title: "Visitor experience",
+    title: "At the booth: visitor experience",
     brief:
-      "What people asked first when they walked up, what they seemed confused about, and any pattern in who stopped versus who walked past. Richest area — probe hardest here.",
+      "What people asked first when they walked up to the booth, what they seemed confused about, and any pattern in who stopped versus who walked past. Richest area — probe hardest here.",
     openingQuestion:
-      "Think about the people who walked up to you. What did they ask about first?",
+      "Think about the people who walked up to the booth. What did they ask about first?",
   },
   {
     id: 6,
+    title: "The wider event: sessions, party and side events",
+    brief:
+      "Everything outside the booth — keynotes and sessions, the party or evening events, dinners, sponsored activities, the venue and the crowd. What was worth the time and money, what fell flat, what we should run differently next year.",
+    openingQuestion:
+      "Away from the booth now — the sessions, the party, dinners, anything else we ran or attended. What was worth the time, and what wasn't?",
+  },
+  {
+    id: 7,
     title: "Logistics and staffing",
     brief:
       "Setup and teardown, what broke or nearly broke, whether shift coverage matched actual traffic.",
@@ -55,7 +63,7 @@ export const SPINE: SpineArea[] = [
       "How did setup and teardown go, and did shift coverage line up with when people were actually around?",
   },
   {
-    id: 7,
+    id: 8,
     title: "Leads",
     brief:
       "How they captured leads, whether they could qualify someone on the spot, and whether they know what happened to those leads afterward.",
@@ -63,7 +71,7 @@ export const SPINE: SpineArea[] = [
       "How were you capturing leads, and could you tell on the spot whether someone was worth following up with?",
   },
   {
-    id: 8,
+    id: 9,
     title: "Structural questions (mandatory, all three, in order)",
     brief:
       "Ask all three, in this order: (a) What did you notice that you think nobody else noticed? (b) Was there a moment you wanted to say something and didn't — what was it? (c) If this were entirely your call next year, what is the first thing you would change?",
@@ -74,13 +82,14 @@ export const SPINE: SpineArea[] = [
 
 export const CLOSER_QUESTION = "Anything I should have asked you about and didn't?";
 
-export const TURN_CAP = 15;
+export const TURN_CAP = 17;
 
 export const INTAKE_AREAS = [
   "What the event was, how many days, and who from the team attended and in what role",
   "What we were trying to get out of it, and whether those goals were written down beforehand or are being reconstructed now",
   "What was different about this one compared to last time or to shows we normally do",
   "What we specifically invested in or bet on this year",
+  "Anything we ran or paid for away from the booth — the party, dinners, sponsored sessions, side events — and what we hoped each one would do for us",
   "What the organizer was worried about going in",
   "What the organizer has already heard, formally or in passing",
   "Whether anything here is sensitive or contentious, so the participant interviewer can probe carefully",
@@ -100,7 +109,7 @@ Convert every organizer statement into a neutral probe of the same topic. The to
 
 Reject and rewrite any question that contains a verdict, uses an evaluative adjective about the thing being asked about, or invites agreement. Specifically ban constructions like "did you also...", "was it too...", "didn't it seem...", "how frustrating was...".
 
-Generate 3 to 6 probes total. Fewer good ones beats more. For each, output: the question text, which spine area (1-8) it attaches to, and the intake statement it was derived from.`;
+Generate 3 to 6 probes total. Fewer good ones beats more. For each, output: the question text, which spine area (1-9) it attaches to, and the intake statement it was derived from. Area 5 is the booth itself; area 6 is everything around it (sessions, the party, dinners, side events) — attach each probe to the right one.`;
 
 export const SYNTHESIS_SYSTEM = `You are synthesizing private one-on-one retro interviews from a team that just worked an event together. Produce one honest, process-level report.
 
@@ -129,7 +138,7 @@ Rules:
 - Never advance away from a spine area on a "thin" answer without at least one probe attempt.
 - Maximum 2 probes per area. If the answer is still thin after two, record it and advance.
 - "not_applicable" advances immediately with no probe.
-- Spine area 8 (the three structural questions) is MANDATORY and protected. If the turn budget is running short, drop probes and compress earlier areas, never these. Ask all three, in order, one at a time.
+- Spine area 9 (the three structural questions) is MANDATORY and protected. If the turn budget is running short, drop probes and compress earlier areas, never these. Ask all three, in order, one at a time.
 - If three consecutive answers come back thin, acknowledge it directly and offer to move faster ("sounds like a lot of this wasn't your area — want me to skip to the last few?") rather than continuing to grind.
 - Skip or combine an area already fully covered by a previous answer rather than asking redundantly.
 - Attach approved probes to the spine area they belong to, asked inside that area's flow.

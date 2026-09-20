@@ -153,7 +153,7 @@ ${SPINE.map((s) => `${s.id}. ${s.title} — ${s.brief}`).join("\n")}
 Approved supplementary probes (attach each to its spine area, ask inside that area's flow):
 ${probes.length ? probes.map((p) => `- (area ${p.spineArea}) ${p.question}`).join("\n") : "- none"}
 
-After spine area 8's three structural questions, ask this closer verbatim as area 9: "${CLOSER_QUESTION}". Then close.
+After spine area 9's three structural questions, ask this closer verbatim as area 10: "${CLOSER_QUESTION}". Then close.
 
 Coverage state: current area ${currentArea}; areas with an answer: [${areasCovered.join(", ")}]; probes used in the current area: ${probesUsedThisArea}. Turns used: ${turns.length} of a cap of ${TURN_CAP}.
 
@@ -173,7 +173,7 @@ Assess the last answer, then choose your action and write the next question.`,
         .eq("id", last.id);
     }
 
-    const structuralDone = turns.some((t) => t.spine_area === 9 && t.answer_text);
+    const structuralDone = turns.some((t) => (t.spine_area ?? 0) >= 9 && t.answer_text);
     const overBudget = turns.length >= TURN_CAP + 4;
     const shouldClose = (result.action === "close" && structuralDone) || overBudget;
 
@@ -189,7 +189,7 @@ Assess the last answer, then choose your action and write the next question.`,
       };
     }
 
-    const nextArea = Math.min(Math.max(result.currentArea || currentArea, 1), 9);
+    const nextArea = Math.min(Math.max(result.currentArea || currentArea, 1), 10);
     const { data: inserted } = await supabaseAdmin
       .from("interview_turns")
       .insert({

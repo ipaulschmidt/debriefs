@@ -42,13 +42,22 @@ function Setup() {
   });
   const invalidate = () => qc.invalidateQueries({ queryKey: ["retro", retroId] });
 
-  const [p, setP] = useState({ name: "", email: "", role_at_event: "" });
+  const [emails, setEmails] = useState<string[]>(["", "", ""]);
   const [m, setM] = useState({ label: "", value: "", prior: "", notes: "" });
 
   const addPerson = useMutation({
-    mutationFn: () => upsertParticipants({ data: { retroId, participants: [p] } }),
+    mutationFn: () =>
+      upsertParticipants({
+        data: {
+          retroId,
+          participants: emails
+            .map((e) => e.trim())
+            .filter(Boolean)
+            .map((email) => ({ email })),
+        },
+      }),
     onSuccess: () => {
-      setP({ name: "", email: "", role_at_event: "" });
+      setEmails(["", "", ""]);
       invalidate();
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "Could not add"),
@@ -95,8 +104,9 @@ function Setup() {
           <p className="eyebrow">Who was there</p>
           <h2 className="mt-2 text-3xl">People</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Each person gets a private link. No accounts, no passwords. They never see anyone
-            else's answers.
+            Just email addresses — one per box. No names needed; the interview asks each person
+            what their role was. Each person gets a private link, with no account or password, and
+            never sees anyone else's answers.
           </p>
 
           <div className="mt-6 space-y-3">
@@ -106,7 +116,8 @@ function Setup() {
                   <div className="min-w-0 flex-1">
                     <p className="text-lg">{person.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {person.email} · {person.role_at_event}
+                      {person.email}
+                      {person.role_at_event ? ` · ${person.role_at_event}` : ""}
                     </p>
                   </div>
                   <Badge variant={person.status === "complete" ? "secondary" : "outline"}>
@@ -133,24 +144,28 @@ function Setup() {
             ))}
           </div>
 
-          <div className="mt-6 grid gap-3 md:grid-cols-4">
-            <Input
-              placeholder="Name"
-              value={p.name}
-              onChange={(e) => setP({ ...p, name: e.target.value })}
-            />
-            <Input
-              placeholder="Email"
-              value={p.email}
-              onChange={(e) => setP({ ...p, email: e.target.value })}
-            />
-            <Input
-              placeholder="Role at the event"
-              value={p.role_at_event}
-              onChange={(e) => setP({ ...p, role_at_event: e.target.value })}
-            />
-            <Button onClick={() => addPerson.mutate()} disabled={!p.name || !p.email}>
-              Add person
+          <div className="mt-6 space-y-2">
+            {emails.map((email, i) => (
+              <Input
+                key={i}
+                type="email"
+                placeholder="name@company.com"
+                value={email}
+                onChange={(e) =>
+                  setEmails((prev) => prev.map((x, xi) => (xi === i ? e.target.value : x)))
+                }
+              />
+            ))}
+          </div>
+          <div className="mt-3 flex gap-3">
+            <Button variant="outline" onClick={() => setEmails((prev) => [...prev, ""])}>
+              Add another box
+            </Button>
+            <Button
+              onClick={() => addPerson.mutate()}
+              disabled={addPerson.isPending || !emails.some((e) => e.trim())}
+            >
+              Add these people
             </Button>
           </div>
 
@@ -160,11 +175,13 @@ function Setup() {
         </section>
 
         <section className="rule-top pt-8">
-          <p className="eyebrow">The hard numbers</p>
+          <p className="eyebrow">The hard numbers · optional</p>
           <h2 className="mt-2 text-3xl">Metrics</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Badge scans, meetings booked, leads created, pipeline sourced, total cost — plus
-            anything else worth tracking. Add last year's figure to get a comparison in the report.
+            Entirely optional, and you fill these in yourself — nothing is pulled from anywhere.
+            Badge scans, meetings booked, leads created, pipeline sourced, total cost, or anything
+            else worth tracking. Whatever you add shows up in the report, next to last year's
+            figure if you enter one. Skip this section and everything else still works.
           </p>
 
           <div className="mt-6 space-y-2">
