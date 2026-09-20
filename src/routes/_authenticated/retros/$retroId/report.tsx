@@ -383,11 +383,7 @@ function ReportPage() {
                     {src.excerpts.map((e, i) => (
                       <li key={i}>
                         <p className="text-muted-foreground">{e.question}</p>
-                        <p>
-                          {e.sensitive
-                            ? "Marked sensitive — this person asked for extra care. Not shown."
-                            : e.answer}
-                        </p>
+                        <p>{e.answer}</p>
                       </li>
                     ))}
                   </ul>

@@ -138,11 +138,7 @@ function AccessLog() {
               {transcript.turns.map((t, i) => (
                 <div key={i}>
                   <p className="text-sm text-muted-foreground">{t.question_text}</p>
-                  <p className="text-sm">
-                    {t.marked_sensitive
-                      ? "Marked sensitive — this person asked for extra care. Not shown here."
-                      : (t.answer_text ?? "—")}
-                  </p>
+                  <p className="text-sm">{t.answer_text ?? "—"}</p>
                 </div>
               ))}
             </div>

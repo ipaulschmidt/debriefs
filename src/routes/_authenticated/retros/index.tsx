@@ -71,7 +71,12 @@ function RetroList() {
     <main className="mx-auto max-w-5xl px-6 py-12">
       <div className="grid gap-12 md:grid-cols-[1.3fr_1fr]">
         <section>
-          <p className="eyebrow">Your retros</p>
+          <div className="flex items-baseline justify-between gap-4">
+            <p className="eyebrow">Your retros</p>
+            <Link to="/dashboard" className="text-sm text-muted-foreground hover:underline">
+              Dashboard →
+            </Link>
+          </div>
           <h1 className="mt-2 text-4xl">Every event, one honest report</h1>
           <div className="mt-8 space-y-3">
             {retros.length === 0 ? (

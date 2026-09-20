@@ -13,9 +13,14 @@ export function RetroNav({ retroId, name }: { retroId: string; name?: string | u
   return (
     <div className="border-b">
       <div className="mx-auto max-w-5xl px-6 pb-3 pt-6">
-        <Link to="/retros" className="eyebrow hover:underline">
-          ← All retros
-        </Link>
+        <div className="flex items-baseline gap-4">
+          <Link to="/retros" className="eyebrow hover:underline">
+            ← All retros
+          </Link>
+          <Link to="/dashboard" className="eyebrow hover:underline">
+            Dashboard
+          </Link>
+        </div>
         <h1 className="mt-2 text-3xl">{name ?? "Retro"}</h1>
         <nav className="mt-4 flex flex-wrap gap-4 text-sm">
           {TABS.map((t) => (
