@@ -439,14 +439,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      has_retro_role: {
-        Args: { _retro_id: string; _role: string; _user_id: string }
-        Returns: boolean
-      }
-      is_retro_member: {
-        Args: { _retro_id: string; _user_id: string }
-        Returns: boolean
-      }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never
