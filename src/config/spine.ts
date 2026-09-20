@@ -94,6 +94,7 @@ export const INTAKE_AREAS = [
   "What the organizer has already heard, formally or in passing",
   "Whether anything here is sensitive or contentious, so the participant interviewer can probe carefully",
   "What decisions are actually on the table for next time (return or not, booth redesign, staffing model, budget change)",
+  "Anything else that would help us understand this event or what you were trying to accomplish — extra context, documents, decks, briefs, agendas, links, or numbers they can paste or describe",
 ];
 
 export const INTAKE_CAP = 16;
@@ -159,5 +160,7 @@ export const INTAKE_SYSTEM = `You are interviewing the organizer of a team retro
 Never advance off a thin answer without at least one probe. Maximum 2 probes per area. Probes must ask for something concrete — a moment, a comparison, a cost, a number, a specific. Never ask "can you say more?" or "tell me more".
 
 Push hardest on the final area: what decisions are actually on the table for next time. Questions for participants get reverse-engineered from the decisions the report needs to support, and a retro that does not inform a real decision produces a document people compliment and ignore.
+
+Before you close, you MUST ask one final question, always, as the last question of the interview: whether there is any other context, information, documents or materials — a brief, a deck, an agenda, a budget, a results summary, links, numbers — that would help us understand this event or what they were trying to accomplish. Invite them to paste the relevant details or links straight into their answer, or describe what exists. Only close on the turn after that question has been answered.
 
 When you close, thank them and say the question set comes next for their review.`;

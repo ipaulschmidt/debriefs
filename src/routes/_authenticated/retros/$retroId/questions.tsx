@@ -15,6 +15,7 @@ import { RetroNav } from "@/components/RetroNav";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Pencil, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/retros/$retroId/questions")({
   head: () => ({
@@ -46,6 +47,14 @@ function Questions() {
 
   const [probes, setProbes] = useState<Probe[]>([]);
   const [note, setNote] = useState("");
+  const [editing, setEditing] = useState<number | null>(null);
+
+  const persist = (next: Probe[]) => {
+    setProbes(next);
+    saveProbes({ data: { retroId, probes: next.filter((p) => p.question.trim()) } })
+      .then(() => qc.invalidateQueries({ queryKey: ["questionSet", retroId] }))
+      .catch(() => toast.error("Could not save that change"));
+  };
   useEffect(() => {
     if (qs) setProbes((qs.organizer_edited_probes ?? []) as unknown as Probe[]);
   }, [qs]);
@@ -167,17 +176,55 @@ function Questions() {
 
                 {areaProbes.map(({ p, i }) => (
                   <div key={i} className="mt-4 rounded-md border bg-card p-4">
-                    <p className="eyebrow">Extra question in this area</p>
-                    <Input
-                      className="mt-2"
-                      placeholder="Write a question — ask about a topic, don't hint at an answer"
-                      value={p.question}
-                      onChange={(e) =>
-                        setProbes((prev) =>
-                          prev.map((x, xi) => (xi === i ? { ...x, question: e.target.value } : x)),
-                        )
-                      }
-                    />
+                    <div className="flex items-start gap-2">
+                      <p className="eyebrow flex-1">Extra question in this area</p>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Edit this question"
+                        onClick={() => setEditing(editing === i ? null : i)}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Delete this question"
+                        onClick={() => {
+                          setEditing(null);
+                          persist(probes.filter((_x, xi) => xi !== i));
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    {editing === i || !p.question.trim() ? (
+                      <div className="mt-2 flex items-center gap-2">
+                        <Input
+                          placeholder="Write a question — ask about a topic, don't hint at an answer"
+                          value={p.question}
+                          autoFocus
+                          onChange={(e) =>
+                            setProbes((prev) =>
+                              prev.map((x, xi) =>
+                                xi === i ? { ...x, question: e.target.value } : x,
+                              ),
+                            )
+                          }
+                        />
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setEditing(null);
+                            persist(probes);
+                          }}
+                        >
+                          Done
+                        </Button>
+                      </div>
+                    ) : (
+                      <p className="mt-2 text-base leading-relaxed">{p.question}</p>
+                    )}
                     {p.derivedFrom ? (
                       <p className="mt-2 text-xs text-muted-foreground">
                         Drafted from something you said in the intake: “{p.derivedFrom}” — your
@@ -191,14 +238,6 @@ function Questions() {
                     ) : (
                       <p className="mt-2 text-xs text-muted-foreground">Added by you.</p>
                     )}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="mt-2"
-                      onClick={() => setProbes((prev) => prev.filter((_x, xi) => xi !== i))}
-                    >
-                      Remove question
-                    </Button>
                   </div>
                 ))}
 
