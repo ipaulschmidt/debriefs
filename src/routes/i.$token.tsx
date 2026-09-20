@@ -88,10 +88,32 @@ function Interview() {
 
   const done = data.participant.status === "complete" || closing;
 
+  const currentArea = Math.min(Math.max(current?.spine_area ?? 1, 1), SPINE.length);
+  const minutesLeft = Math.max(1, Math.round((SPINE.length - currentArea + 1) * 1.2));
+  const showProgress = (started || turns.length > 0) && !done;
+
   return (
     <main className="mx-auto max-w-2xl px-6 py-12">
       <p className="eyebrow">{data.retro.name}</p>
       <h1 className="mt-2 text-4xl">Hi {data.participant.name}</h1>
+
+      {showProgress ? (
+        <div className="mt-6 space-y-2">
+          <div className="flex items-baseline justify-between text-xs text-muted-foreground">
+            <span>
+              Section {currentArea} of {SPINE.length}
+              {SPINE[currentArea - 1] ? ` · ${SPINE[currentArea - 1].title}` : ""}
+            </span>
+            <span>about {minutesLeft} min to go</span>
+          </div>
+          <div className="h-1 w-full rounded-full bg-muted">
+            <div
+              className="h-1 rounded-full bg-foreground transition-all"
+              style={{ width: `${Math.round(((currentArea - 1) / SPINE.length) * 100)}%` }}
+            />
+          </div>
+        </div>
+      ) : null}
 
       {!started && turns.length === 0 ? (
         <>
