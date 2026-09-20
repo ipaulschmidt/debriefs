@@ -69,7 +69,7 @@ function Setup() {
             .filter((p) => p.email.trim())
             .map((p) => ({
               email: p.email.trim(),
-              role_at_event: p.dept || undefined,
+              ...(p.dept ? { role_at_event: p.dept } : {}),
             })),
         },
       }),
@@ -166,25 +166,48 @@ function Setup() {
           </div>
 
           <div className="mt-6 space-y-2">
-            {emails.map((email, i) => (
-              <Input
-                key={i}
-                type="email"
-                placeholder="name@company.com"
-                value={email}
-                onChange={(e) =>
-                  setEmails((prev) => prev.map((x, xi) => (xi === i ? e.target.value : x)))
-                }
-              />
+            {emails.map((person, i) => (
+              <div key={i} className="flex gap-2">
+                <Input
+                  type="email"
+                  placeholder="name@company.com"
+                  className="flex-1"
+                  value={person.email}
+                  onChange={(e) =>
+                    setEmails((prev) =>
+                      prev.map((x, xi) => (xi === i ? { ...x, email: e.target.value } : x)),
+                    )
+                  }
+                />
+                <select
+                  className="w-44 rounded-md border bg-background px-2 text-sm text-foreground"
+                  value={person.dept}
+                  onChange={(e) =>
+                    setEmails((prev) =>
+                      prev.map((x, xi) => (xi === i ? { ...x, dept: e.target.value } : x)),
+                    )
+                  }
+                >
+                  <option value="">Department · optional</option>
+                  {DEPARTMENTS.map((d) => (
+                    <option key={d} value={d}>
+                      {d}
+                    </option>
+                  ))}
+                </select>
+              </div>
             ))}
           </div>
           <div className="mt-3 flex gap-3">
-            <Button variant="outline" onClick={() => setEmails((prev) => [...prev, ""])}>
+            <Button
+              variant="outline"
+              onClick={() => setEmails((prev) => [...prev, { email: "", dept: "" }])}
+            >
               Add another box
             </Button>
             <Button
               onClick={() => addPerson.mutate()}
-              disabled={addPerson.isPending || !emails.some((e) => e.trim())}
+              disabled={addPerson.isPending || !emails.some((p) => p.email.trim())}
             >
               Add these people
             </Button>
