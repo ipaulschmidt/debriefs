@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as ITokenRouteImport } from './routes/i.$token'
 import { Route as AuthenticatedRetrosIndexRouteImport } from './routes/_authenticated/retros/index'
 import { Route as AuthenticatedRetrosRetroIdIndexRouteImport } from './routes/_authenticated/retros/$retroId/index'
@@ -34,6 +35,11 @@ const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const ITokenRoute = ITokenRouteImport.update({
   id: '/i/$token',
@@ -86,6 +92,7 @@ const AuthenticatedRetrosRetroIdSetupRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
   '/i/$token': typeof ITokenRoute
   '/retros/': typeof AuthenticatedRetrosIndexRoute
   '/retros/$retroId/access-log': typeof AuthenticatedRetrosRetroIdAccessLogRoute
@@ -98,6 +105,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
   '/i/$token': typeof ITokenRoute
   '/retros': typeof AuthenticatedRetrosIndexRoute
   '/retros/$retroId/access-log': typeof AuthenticatedRetrosRetroIdAccessLogRoute
@@ -112,6 +120,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/i/$token': typeof ITokenRoute
   '/_authenticated/retros/': typeof AuthenticatedRetrosIndexRoute
   '/_authenticated/retros/$retroId/access-log': typeof AuthenticatedRetrosRetroIdAccessLogRoute
@@ -126,6 +135,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/dashboard'
     | '/i/$token'
     | '/retros/'
     | '/retros/$retroId/access-log'
@@ -138,6 +148,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/dashboard'
     | '/i/$token'
     | '/retros'
     | '/retros/$retroId/access-log'
@@ -151,6 +162,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/dashboard'
     | '/i/$token'
     | '/_authenticated/retros/'
     | '/_authenticated/retros/$retroId/access-log'
@@ -190,6 +202,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/i/$token': {
       id: '/i/$token'
@@ -251,6 +270,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedRetrosIndexRoute: typeof AuthenticatedRetrosIndexRoute
   AuthenticatedRetrosRetroIdAccessLogRoute: typeof AuthenticatedRetrosRetroIdAccessLogRoute
   AuthenticatedRetrosRetroIdIntakeRoute: typeof AuthenticatedRetrosRetroIdIntakeRoute
@@ -261,6 +281,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedRetrosIndexRoute: AuthenticatedRetrosIndexRoute,
   AuthenticatedRetrosRetroIdAccessLogRoute:
     AuthenticatedRetrosRetroIdAccessLogRoute,
