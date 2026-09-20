@@ -153,7 +153,12 @@ export const finishIntake = createServerFn({ method: "POST" })
     return summary;
   });
 
-export type Probe = { question: string; spineArea: number; derivedFrom: string };
+export type Probe = {
+  question: string;
+  spineArea: number;
+  derivedFrom: string;
+  fromNote?: string;
+};
 
 export const generateProbes = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -181,24 +186,59 @@ export const generateProbes = createServerFn({ method: "POST" })
 
     const { data: existing } = await context.supabase
       .from("question_sets")
-      .select("id")
+      .select("id, organizer_edited_probes")
       .eq("retro_id", data.retroId)
       .maybeSingle();
+
+    // Keep anything the organizer wrote themselves; only redraft the intake-derived ones.
+    const kept = (((existing?.organizer_edited_probes ?? []) as unknown as Probe[]) || []).filter(
+      (p) => p && p.question?.trim() && !p.derivedFrom,
+    );
+    const merged = [...probes, ...kept];
 
     if (existing) {
       await context.supabase
         .from("question_sets")
-        .update({ generated_probes: probes, organizer_edited_probes: probes, approved_at: null })
+        .update({
+          generated_probes: probes,
+          organizer_edited_probes: merged,
+          approved_at: null,
+        })
         .eq("id", existing.id);
     } else {
       await context.supabase.from("question_sets").insert({
         retro_id: data.retroId,
         generated_probes: probes,
-        organizer_edited_probes: probes,
+        organizer_edited_probes: merged,
       });
     }
 
-    return probes;
+    return merged;
+  });
+
+export const draftCustomQuestion = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { retroId: string; note: string }) => input)
+  .handler(async ({ data }) => {
+    const { runJson } = await import("./ai.server");
+    const { SPINE } = await import("@/config/spine");
+
+    const out = await runJson<{ question: string; spineArea: number }>({
+      system: `${PROBE_GENERATION_SYSTEM}
+
+You are given one note from the organizer describing something extra they want asked. Write exactly one neutral question that probes that topic without revealing or suggesting the organizer's view, and choose the spine area it belongs in.`,
+      schemaHint: `{"question":"the single neutral question","spineArea":1}`,
+      messages: [
+        {
+          role: "user",
+          content: `Spine areas:\n${SPINE.map((a) => `${a.id}. ${a.title} — ${a.brief}`).join("\n")}\n\nOrganizer note: ${data.note}`,
+        },
+      ],
+    });
+
+    const areaIds = SPINE.map((a) => a.id);
+    const spineArea = areaIds.includes(Number(out.spineArea)) ? Number(out.spineArea) : SPINE[0]!.id;
+    return { question: out.question, spineArea, derivedFrom: "", fromNote: data.note } as Probe;
   });
 
 export const saveProbes = createServerFn({ method: "POST" })
