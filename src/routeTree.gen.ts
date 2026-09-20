@@ -12,10 +12,13 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ITokenRouteImport } from './routes/i.$token'
 import { Route as AuthenticatedRetrosIndexRouteImport } from './routes/_authenticated/retros/index'
 import { Route as AuthenticatedRetrosRetroIdIndexRouteImport } from './routes/_authenticated/retros/$retroId/index'
+import { Route as AuthenticatedRetrosRetroIdAccessLogRouteImport } from './routes/_authenticated/retros/$retroId/access-log'
 import { Route as AuthenticatedRetrosRetroIdIntakeRouteImport } from './routes/_authenticated/retros/$retroId/intake'
 import { Route as AuthenticatedRetrosRetroIdQuestionsRouteImport } from './routes/_authenticated/retros/$retroId/questions'
+import { Route as AuthenticatedRetrosRetroIdReportRouteImport } from './routes/_authenticated/retros/$retroId/report'
 import { Route as AuthenticatedRetrosRetroIdSetupRouteImport } from './routes/_authenticated/retros/$retroId/setup'
 
 const IndexRoute = IndexRouteImport.update({
@@ -32,6 +35,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ITokenRoute = ITokenRouteImport.update({
+  id: '/i/$token',
+  path: '/i/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedRetrosIndexRoute =
   AuthenticatedRetrosIndexRouteImport.update({
     id: '/retros/',
@@ -42,6 +50,12 @@ const AuthenticatedRetrosRetroIdIndexRoute =
   AuthenticatedRetrosRetroIdIndexRouteImport.update({
     id: '/retros/$retroId/',
     path: '/retros/$retroId/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedRetrosRetroIdAccessLogRoute =
+  AuthenticatedRetrosRetroIdAccessLogRouteImport.update({
+    id: '/retros/$retroId/access-log',
+    path: '/retros/$retroId/access-log',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedRetrosRetroIdIntakeRoute =
@@ -56,6 +70,12 @@ const AuthenticatedRetrosRetroIdQuestionsRoute =
     path: '/retros/$retroId/questions',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedRetrosRetroIdReportRoute =
+  AuthenticatedRetrosRetroIdReportRouteImport.update({
+    id: '/retros/$retroId/report',
+    path: '/retros/$retroId/report',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedRetrosRetroIdSetupRoute =
   AuthenticatedRetrosRetroIdSetupRouteImport.update({
     id: '/retros/$retroId/setup',
@@ -66,18 +86,24 @@ const AuthenticatedRetrosRetroIdSetupRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/i/$token': typeof ITokenRoute
   '/retros/': typeof AuthenticatedRetrosIndexRoute
+  '/retros/$retroId/access-log': typeof AuthenticatedRetrosRetroIdAccessLogRoute
   '/retros/$retroId/intake': typeof AuthenticatedRetrosRetroIdIntakeRoute
   '/retros/$retroId/questions': typeof AuthenticatedRetrosRetroIdQuestionsRoute
+  '/retros/$retroId/report': typeof AuthenticatedRetrosRetroIdReportRoute
   '/retros/$retroId/setup': typeof AuthenticatedRetrosRetroIdSetupRoute
   '/retros/$retroId/': typeof AuthenticatedRetrosRetroIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/i/$token': typeof ITokenRoute
   '/retros': typeof AuthenticatedRetrosIndexRoute
+  '/retros/$retroId/access-log': typeof AuthenticatedRetrosRetroIdAccessLogRoute
   '/retros/$retroId/intake': typeof AuthenticatedRetrosRetroIdIntakeRoute
   '/retros/$retroId/questions': typeof AuthenticatedRetrosRetroIdQuestionsRoute
+  '/retros/$retroId/report': typeof AuthenticatedRetrosRetroIdReportRoute
   '/retros/$retroId/setup': typeof AuthenticatedRetrosRetroIdSetupRoute
   '/retros/$retroId': typeof AuthenticatedRetrosRetroIdIndexRoute
 }
@@ -86,9 +112,12 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/i/$token': typeof ITokenRoute
   '/_authenticated/retros/': typeof AuthenticatedRetrosIndexRoute
+  '/_authenticated/retros/$retroId/access-log': typeof AuthenticatedRetrosRetroIdAccessLogRoute
   '/_authenticated/retros/$retroId/intake': typeof AuthenticatedRetrosRetroIdIntakeRoute
   '/_authenticated/retros/$retroId/questions': typeof AuthenticatedRetrosRetroIdQuestionsRoute
+  '/_authenticated/retros/$retroId/report': typeof AuthenticatedRetrosRetroIdReportRoute
   '/_authenticated/retros/$retroId/setup': typeof AuthenticatedRetrosRetroIdSetupRoute
   '/_authenticated/retros/$retroId/': typeof AuthenticatedRetrosRetroIdIndexRoute
 }
@@ -97,18 +126,24 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/i/$token'
     | '/retros/'
+    | '/retros/$retroId/access-log'
     | '/retros/$retroId/intake'
     | '/retros/$retroId/questions'
+    | '/retros/$retroId/report'
     | '/retros/$retroId/setup'
     | '/retros/$retroId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
+    | '/i/$token'
     | '/retros'
+    | '/retros/$retroId/access-log'
     | '/retros/$retroId/intake'
     | '/retros/$retroId/questions'
+    | '/retros/$retroId/report'
     | '/retros/$retroId/setup'
     | '/retros/$retroId'
   id:
@@ -116,9 +151,12 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/i/$token'
     | '/_authenticated/retros/'
+    | '/_authenticated/retros/$retroId/access-log'
     | '/_authenticated/retros/$retroId/intake'
     | '/_authenticated/retros/$retroId/questions'
+    | '/_authenticated/retros/$retroId/report'
     | '/_authenticated/retros/$retroId/setup'
     | '/_authenticated/retros/$retroId/'
   fileRoutesById: FileRoutesById
@@ -127,6 +165,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ITokenRoute: typeof ITokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -152,6 +191,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/i/$token': {
+      id: '/i/$token'
+      path: '/i/$token'
+      fullPath: '/i/$token'
+      preLoaderRoute: typeof ITokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/retros/': {
       id: '/_authenticated/retros/'
       path: '/retros'
@@ -164,6 +210,13 @@ declare module '@tanstack/react-router' {
       path: '/retros/$retroId'
       fullPath: '/retros/$retroId/'
       preLoaderRoute: typeof AuthenticatedRetrosRetroIdIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/retros/$retroId/access-log': {
+      id: '/_authenticated/retros/$retroId/access-log'
+      path: '/retros/$retroId/access-log'
+      fullPath: '/retros/$retroId/access-log'
+      preLoaderRoute: typeof AuthenticatedRetrosRetroIdAccessLogRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/retros/$retroId/intake': {
@@ -180,6 +233,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRetrosRetroIdQuestionsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/retros/$retroId/report': {
+      id: '/_authenticated/retros/$retroId/report'
+      path: '/retros/$retroId/report'
+      fullPath: '/retros/$retroId/report'
+      preLoaderRoute: typeof AuthenticatedRetrosRetroIdReportRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/retros/$retroId/setup': {
       id: '/_authenticated/retros/$retroId/setup'
       path: '/retros/$retroId/setup'
@@ -192,17 +252,22 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedRetrosIndexRoute: typeof AuthenticatedRetrosIndexRoute
+  AuthenticatedRetrosRetroIdAccessLogRoute: typeof AuthenticatedRetrosRetroIdAccessLogRoute
   AuthenticatedRetrosRetroIdIntakeRoute: typeof AuthenticatedRetrosRetroIdIntakeRoute
   AuthenticatedRetrosRetroIdQuestionsRoute: typeof AuthenticatedRetrosRetroIdQuestionsRoute
+  AuthenticatedRetrosRetroIdReportRoute: typeof AuthenticatedRetrosRetroIdReportRoute
   AuthenticatedRetrosRetroIdSetupRoute: typeof AuthenticatedRetrosRetroIdSetupRoute
   AuthenticatedRetrosRetroIdIndexRoute: typeof AuthenticatedRetrosRetroIdIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedRetrosIndexRoute: AuthenticatedRetrosIndexRoute,
+  AuthenticatedRetrosRetroIdAccessLogRoute:
+    AuthenticatedRetrosRetroIdAccessLogRoute,
   AuthenticatedRetrosRetroIdIntakeRoute: AuthenticatedRetrosRetroIdIntakeRoute,
   AuthenticatedRetrosRetroIdQuestionsRoute:
     AuthenticatedRetrosRetroIdQuestionsRoute,
+  AuthenticatedRetrosRetroIdReportRoute: AuthenticatedRetrosRetroIdReportRoute,
   AuthenticatedRetrosRetroIdSetupRoute: AuthenticatedRetrosRetroIdSetupRoute,
   AuthenticatedRetrosRetroIdIndexRoute: AuthenticatedRetrosRetroIdIndexRoute,
 }
@@ -214,6 +279,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ITokenRoute: ITokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

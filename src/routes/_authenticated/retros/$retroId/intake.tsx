@@ -45,7 +45,9 @@ function Intake() {
 
   const next = useMutation({
     mutationFn: (answer?: string) =>
-      intakeNext({ data: { retroId, answer, answerMode: mode } }),
+      intakeNext({
+        data: { retroId, ...(answer ? { answer, answerMode: mode } : {}) },
+      }),
     onSuccess: (res) => {
       setDraft("");
       if (res.done) setClosing(res.closing ?? "Thanks — that's everything I needed.");
