@@ -40,14 +40,22 @@ export const SPINE: SpineArea[] = [
   },
   {
     id: 5,
-    title: "Visitor experience",
+    title: "At the booth: visitor experience",
     brief:
-      "What people asked first when they walked up, what they seemed confused about, and any pattern in who stopped versus who walked past. Richest area — probe hardest here.",
+      "What people asked first when they walked up to the booth, what they seemed confused about, and any pattern in who stopped versus who walked past. Richest area — probe hardest here.",
     openingQuestion:
-      "Think about the people who walked up to you. What did they ask about first?",
+      "Think about the people who walked up to the booth. What did they ask about first?",
   },
   {
     id: 6,
+    title: "The wider event: sessions, party and side events",
+    brief:
+      "Everything outside the booth — keynotes and sessions, the party or evening events, dinners, sponsored activities, the venue and the crowd. What was worth the time and money, what fell flat, what we should run differently next year.",
+    openingQuestion:
+      "Away from the booth now — the sessions, the party, dinners, anything else we ran or attended. What was worth the time, and what wasn't?",
+  },
+  {
+    id: 7,
     title: "Logistics and staffing",
     brief:
       "Setup and teardown, what broke or nearly broke, whether shift coverage matched actual traffic.",
@@ -55,7 +63,7 @@ export const SPINE: SpineArea[] = [
       "How did setup and teardown go, and did shift coverage line up with when people were actually around?",
   },
   {
-    id: 7,
+    id: 8,
     title: "Leads",
     brief:
       "How they captured leads, whether they could qualify someone on the spot, and whether they know what happened to those leads afterward.",
@@ -63,7 +71,7 @@ export const SPINE: SpineArea[] = [
       "How were you capturing leads, and could you tell on the spot whether someone was worth following up with?",
   },
   {
-    id: 8,
+    id: 9,
     title: "Structural questions (mandatory, all three, in order)",
     brief:
       "Ask all three, in this order: (a) What did you notice that you think nobody else noticed? (b) Was there a moment you wanted to say something and didn't — what was it? (c) If this were entirely your call next year, what is the first thing you would change?",
