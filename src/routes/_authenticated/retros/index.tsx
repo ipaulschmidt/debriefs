@@ -116,10 +116,7 @@ function RetroList() {
               />
             </div>
             <div className="space-y-2">
-              <Label>Type</Label>
-              <Input value="Event" disabled />
-            </div>
-            <div className="space-y-2">
+
               <Label htmlFor="ed">Event date</Label>
               <Input
                 id="ed"
