@@ -94,6 +94,7 @@ export const INTAKE_AREAS = [
   "What the organizer has already heard, formally or in passing",
   "Whether anything here is sensitive or contentious, so the participant interviewer can probe carefully",
   "What decisions are actually on the table for next time (return or not, booth redesign, staffing model, budget change)",
+  "Anything else that would help us understand this event or what you were trying to accomplish — extra context, documents, decks, briefs, agendas, links, or numbers they can paste or describe",
 ];
 
 export const INTAKE_CAP = 16;
