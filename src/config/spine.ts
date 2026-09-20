@@ -89,6 +89,7 @@ export const INTAKE_AREAS = [
   "What we were trying to get out of it, and whether those goals were written down beforehand or are being reconstructed now",
   "What was different about this one compared to last time or to shows we normally do",
   "What we specifically invested in or bet on this year",
+  "Anything we ran or paid for away from the booth — the party, dinners, sponsored sessions, side events — and what we hoped each one would do for us",
   "What the organizer was worried about going in",
   "What the organizer has already heard, formally or in passing",
   "Whether anything here is sensitive or contentious, so the participant interviewer can probe carefully",
