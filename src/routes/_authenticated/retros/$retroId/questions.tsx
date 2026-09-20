@@ -15,6 +15,7 @@ import { RetroNav } from "@/components/RetroNav";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Pencil, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/retros/$retroId/questions")({
   head: () => ({
