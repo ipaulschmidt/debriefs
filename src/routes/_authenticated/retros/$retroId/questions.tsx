@@ -229,14 +229,6 @@ function Questions() {
                     ) : (
                       <p className="mt-2 text-xs text-muted-foreground">Added by you.</p>
                     )}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="mt-2"
-                      onClick={() => setProbes((prev) => prev.filter((_x, xi) => xi !== i))}
-                    >
-                      Remove question
-                    </Button>
                   </div>
                 ))}
 
