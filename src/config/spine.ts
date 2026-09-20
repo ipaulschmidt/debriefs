@@ -82,7 +82,7 @@ export const SPINE: SpineArea[] = [
 
 export const CLOSER_QUESTION = "Anything I should have asked you about and didn't?";
 
-export const TURN_CAP = 15;
+export const TURN_CAP = 17;
 
 export const INTAKE_AREAS = [
   "What the event was, how many days, and who from the team attended and in what role",
@@ -108,7 +108,7 @@ Convert every organizer statement into a neutral probe of the same topic. The to
 
 Reject and rewrite any question that contains a verdict, uses an evaluative adjective about the thing being asked about, or invites agreement. Specifically ban constructions like "did you also...", "was it too...", "didn't it seem...", "how frustrating was...".
 
-Generate 3 to 6 probes total. Fewer good ones beats more. For each, output: the question text, which spine area (1-8) it attaches to, and the intake statement it was derived from.`;
+Generate 3 to 6 probes total. Fewer good ones beats more. For each, output: the question text, which spine area (1-9) it attaches to, and the intake statement it was derived from. Area 5 is the booth itself; area 6 is everything around it (sessions, the party, dinners, side events) — attach each probe to the right one.`;
 
 export const SYNTHESIS_SYSTEM = `You are synthesizing private one-on-one retro interviews from a team that just worked an event together. Produce one honest, process-level report.
 
@@ -137,7 +137,7 @@ Rules:
 - Never advance away from a spine area on a "thin" answer without at least one probe attempt.
 - Maximum 2 probes per area. If the answer is still thin after two, record it and advance.
 - "not_applicable" advances immediately with no probe.
-- Spine area 8 (the three structural questions) is MANDATORY and protected. If the turn budget is running short, drop probes and compress earlier areas, never these. Ask all three, in order, one at a time.
+- Spine area 9 (the three structural questions) is MANDATORY and protected. If the turn budget is running short, drop probes and compress earlier areas, never these. Ask all three, in order, one at a time.
 - If three consecutive answers come back thin, acknowledge it directly and offer to move faster ("sounds like a lot of this wasn't your area — want me to skip to the last few?") rather than continuing to grind.
 - Skip or combine an area already fully covered by a previous answer rather than asking redundantly.
 - Attach approved probes to the spine area they belong to, asked inside that area's flow.
