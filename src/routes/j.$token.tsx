@@ -43,7 +43,7 @@ function Join() {
     mutationFn: () =>
       joinRetro({ data: { joinToken: token, email, ...(dept ? { dept } : {}) } }),
     onSuccess: (res) => navigate({ to: "/i/$token", params: { token: res.inviteToken } }),
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Could not start your interview"),
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Could not start your survey"),
   });
 
   if (isLoading) {
@@ -96,7 +96,7 @@ function Join() {
           onClick={() => join.mutate()}
           disabled={!email.trim() || join.isPending}
         >
-          {join.isPending ? "Starting…" : "Start my interview"}
+          {join.isPending ? "Starting…" : "Start my survey"}
         </Button>
       </div>
     </main>
