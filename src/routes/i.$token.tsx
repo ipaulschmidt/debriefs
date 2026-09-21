@@ -84,26 +84,47 @@ function Interview() {
   const showProgress = (started || turns.length > 0) && !done;
 
   return (
-    <main className="mx-auto max-w-2xl px-6 py-12">
+    <main className="mx-auto max-w-2xl px-6 py-12 pb-32 sm:pb-12">
       <p className="eyebrow">{data.retro.name}</p>
       <h1 className="mt-2 text-4xl">Hi {data.participant.name}</h1>
 
       {showProgress ? (
-        <div className="mt-6 space-y-2">
-          <div className="flex items-baseline justify-between text-xs text-muted-foreground">
-            <span>
-              Section {currentArea} of {SPINE.length}
-              {currentAreaTitle ? ` · ${currentAreaTitle}` : ""}
-            </span>
-            <span>about {minutesLeft} min to go</span>
+        <>
+          <div className="mt-6 hidden space-y-2 sm:block">
+            <div className="flex items-baseline justify-between text-xs text-muted-foreground">
+              <span>
+                Section {currentArea} of {SPINE.length}
+                {currentAreaTitle ? ` · ${currentAreaTitle}` : ""}
+              </span>
+              <span>about {minutesLeft} min to go</span>
+            </div>
+            <div className="h-1 w-full rounded-full bg-muted">
+              <div
+                className="h-1 rounded-full bg-foreground transition-all"
+                style={{ width: `${Math.round(((currentArea - 1) / SPINE.length) * 100)}%` }}
+              />
+            </div>
           </div>
-          <div className="h-1 w-full rounded-full bg-muted">
-            <div
-              className="h-1 rounded-full bg-foreground transition-all"
-              style={{ width: `${Math.round(((currentArea - 1) / SPINE.length) * 100)}%` }}
-            />
+
+          {/* Always-visible gauge on a phone, pinned to the bottom of the screen. */}
+          <div className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 px-5 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] pt-3 backdrop-blur sm:hidden">
+            <div className="mx-auto max-w-2xl space-y-2">
+              <div className="flex items-baseline justify-between text-xs">
+                <span className="font-medium">
+                  {sectionsLeft} {sectionsLeft === 1 ? "section" : "sections"} left
+                  {currentAreaTitle ? ` · now: ${currentAreaTitle}` : ""}
+                </span>
+                <span className="text-muted-foreground">~{minutesLeft} min</span>
+              </div>
+              <div className="h-1.5 w-full rounded-full bg-muted">
+                <div
+                  className="h-1.5 rounded-full bg-foreground transition-all"
+                  style={{ width: `${Math.round(((currentArea - 1) / SPINE.length) * 100)}%` }}
+                />
+              </div>
+            </div>
           </div>
-        </div>
+        </>
       ) : null}
 
       {!started && turns.length === 0 ? (

@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { DEPARTMENTS } from "@/config/departments";
 
 export const Route = createFileRoute("/_authenticated/retros/$retroId/setup")({
   head: () => ({
@@ -42,16 +43,6 @@ function Setup() {
   });
   const invalidate = () => qc.invalidateQueries({ queryKey: ["retro", retroId] });
 
-  const DEPARTMENTS = [
-    "Sales",
-    "Marketing",
-    "Engineering",
-    "Product",
-    "Customer success",
-    "Leadership",
-    "Events / field",
-    "Other",
-  ];
 
   const [emails, setEmails] = useState<{ email: string; dept: string }[]>([
     { email: "", dept: "" },
@@ -122,7 +113,36 @@ function Setup() {
       <RetroNav retroId={retroId} name={data?.retro?.name ?? undefined} />
       <main className="mx-auto max-w-3xl space-y-12 px-6 py-10">
         <section>
-          <p className="eyebrow">Who was there</p>
+          <p className="eyebrow">The easy way</p>
+          <h2 className="mt-2 text-3xl">One link for the whole team</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Drop this single link in Slack or an email to everyone who was there. Each person enters
+            their own email and department, then gets their own private interview — you don't have
+            to add anyone by hand. People still never see each other's answers.
+          </p>
+          <div className="mt-4 flex items-center gap-2">
+            <Input
+              readOnly
+              value={data?.retro?.join_token ? `${origin}/j/${data.retro.join_token}` : "…"}
+              className="text-xs"
+            />
+            <Button
+              variant="outline"
+              onClick={() => {
+                navigator.clipboard.writeText(`${origin}/j/${data?.retro?.join_token}`);
+                toast.success("Team link copied");
+              }}
+            >
+              Copy
+            </Button>
+          </div>
+          <p className="mt-3 text-xs text-muted-foreground">
+            Press “Open interviews” below before you share it, so the link is live.
+          </p>
+        </section>
+
+        <section className="rule-top pt-8">
+          <p className="eyebrow">Or add people yourself</p>
           <h2 className="mt-2 text-3xl">People</h2>
           <p className="mt-2 text-sm text-muted-foreground">
             Just email addresses — one per box. No names needed. If you like, pick each person's
