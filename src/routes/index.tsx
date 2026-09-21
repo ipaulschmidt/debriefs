@@ -86,13 +86,10 @@ function Landing() {
           <li>The report describes what happened and never names who said it.</li>
           <li>Colleagues never see individual responses.</li>
           <li>
-            A retro admin can review individual responses if there is a specific reason, and every
+            A Debrief admin can review individual responses if there is a specific reason, and every
             such review is recorded in a log the whole team can read.
           </li>
         </ul>
-        <p className="mt-6 max-w-2xl text-sm leading-relaxed">
-          That is not anonymity, and Debrief never calls it that.
-        </p>
       </section>
 
       <footer className="rule-top mx-auto max-w-5xl px-6 py-10 text-xs text-muted-foreground">
