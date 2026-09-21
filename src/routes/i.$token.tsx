@@ -194,7 +194,7 @@ function Interview() {
         {done ? (
           <div className="rule-top animate-in fade-in slide-in-from-bottom-2 pt-8 duration-300">
             <p className="text-xl leading-relaxed">
-              {closing ?? "You've finished this interview. Thank you."}
+              {closing ?? "You've finished the survey. Thank you."}
             </p>
             <p className="mt-3 text-sm text-muted-foreground">
               Once everyone has finished{data.retro.interview_deadline ? ` or the ${data.retro.interview_deadline} deadline passes` : ""}, the answers are

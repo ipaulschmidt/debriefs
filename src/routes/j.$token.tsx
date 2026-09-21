@@ -62,7 +62,7 @@ function Join() {
   return (
     <main className="mx-auto max-w-xl px-6 py-14">
       <p className="eyebrow">{retro.name}</p>
-      <h1 className="mt-2 text-4xl">Your retro interview</h1>
+      <h1 className="mt-2 text-4xl">Your feedback survey</h1>
       <p className="mt-4 text-base leading-relaxed">
         A private conversation about how the event actually went — ten to fifteen minutes, type or
         speak, stop and come back whenever you like.
