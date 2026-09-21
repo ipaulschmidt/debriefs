@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { DEPARTMENTS } from "@/config/departments";
+import { shareOrigin } from "@/lib/share-url";
 
 export const Route = createFileRoute("/_authenticated/retros/$retroId/setup")({
   head: () => ({
@@ -52,8 +53,8 @@ function Setup() {
   const [m, setM] = useState({ label: "", value: "", prior: "", notes: "" });
 
   const addPerson = useMutation({
-    mutationFn: () =>
-      upsertParticipants({
+    mutationFn: async () => {
+      await upsertParticipants({
         data: {
           retroId,
           participants: emails
