@@ -66,6 +66,31 @@ export const getInterview = createServerFn({ method: "GET" })
     };
   });
 
+export const updateInterviewAnswer = createServerFn({ method: "POST" })
+  .inputValidator((input: { token: string; turnId: string; answer: string }) => {
+    const answer = input.answer.trim();
+    if (!answer) throw new Error("Please enter an answer before saving.");
+    return { ...input, answer };
+  })
+  .handler(async ({ data }) => {
+    const { supabaseAdmin, participant, turns } = await loadContext(data.token);
+    if (participant.status === "complete") {
+      throw new Error("This interview has already been completed.");
+    }
+
+    const turn = turns.find((candidate) => candidate.id === data.turnId);
+    if (!turn?.answer_text) throw new Error("That answer could not be found.");
+
+    const { error } = await supabaseAdmin
+      .from("interview_turns")
+      .update({ answer_text: data.answer, answer_mode: "text", answer_quality: null })
+      .eq("id", turn.id)
+      .eq("participant_id", participant.id);
+    if (error) throw new Error(error.message);
+
+    return { id: turn.id, answer_text: data.answer };
+  });
+
 export const interviewNext = createServerFn({ method: "POST" })
   .inputValidator(
     (input: {
