@@ -161,38 +161,19 @@ function Interview() {
 
       {!started && turns.length === 0 ? (
         <>
-          <div className="mt-6 space-y-4 text-base leading-relaxed">
+          <div className="mt-6 space-y-3 text-base leading-relaxed">
             <p>
-              This is a private conversation about how the event actually went. Ten to fifteen
-              minutes. You can type or speak.
+              A private conversation about how the event actually went. About ten minutes — type
+              or speak, stop and come back anytime.
             </p>
-            <div className="space-y-2 rounded-md border bg-card p-5 text-sm leading-relaxed">
-              <p>Before we start, exactly how this works:</p>
-              <ul className="list-disc space-y-1 pl-5">
-                <li>The report describes what happened. It never names who said it.</li>
-                <li>
-                  Something only appears in the report once it has come up in two separate
-                  interviews.
-                </li>
-                <li>Your colleagues never see anyone's individual answers, including yours.</li>
-                <li>
-                  So be straight with me. Specific, honest answers are the whole point — there is
-                  nothing to soften here.
-                </li>
-                <li>
-                  An admin can review individual responses for a specific reason, and every one of
-                  those reviews is recorded.
-                </li>
-              </ul>
-              <p>
-                I'll ask follow-up questions. That's normal and expected — it doesn't mean your
-                first answer was wrong, just that specifics are more useful than summaries.
-              </p>
-            </div>
+            <p className="text-sm text-muted-foreground">
+              Nobody sees your individual answers — the report describes what happened without
+              naming anyone. Be straight and specific: a moment, a number or an example is worth
+              more than a summary.
+            </p>
             {data.retro.interview_deadline ? (
               <p className="text-sm text-muted-foreground">
-                Please finish by {data.retro.interview_deadline}. You can stop and come back — this
-                link remembers where you were.
+                Please finish by {data.retro.interview_deadline}.
               </p>
             ) : null}
           </div>
