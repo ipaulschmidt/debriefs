@@ -102,15 +102,7 @@ function Setup() {
     mutationFn: (id: string) => removeMetric({ data: { id } }),
     onSuccess: invalidate,
   });
-  const invite = useMutation({
-    mutationFn: () => sendInvites({ data: { retroId } }),
-    onSuccess: () => {
-      invalidate();
-      toast.success("Interviews are open. Share each person's private link below.");
-    },
-  });
-
-  const origin = typeof window === "undefined" ? "" : window.location.origin;
+  const origin = shareOrigin();
 
   return (
     <>
