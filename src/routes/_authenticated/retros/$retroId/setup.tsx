@@ -64,7 +64,10 @@ function Setup() {
               ...(p.dept ? { role_at_event: p.dept } : {}),
             })),
         },
-      }),
+      });
+      // Adding someone opens their interview straight away — no extra step.
+      await sendInvites({ data: { retroId } });
+    },
     onSuccess: () => {
       setEmails([
         { email: "", dept: "" },
