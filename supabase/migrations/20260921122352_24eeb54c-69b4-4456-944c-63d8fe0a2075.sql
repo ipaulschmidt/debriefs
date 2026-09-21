@@ -1,0 +1,2 @@
+ALTER TABLE public.retros ADD COLUMN IF NOT EXISTS join_token text NOT NULL DEFAULT encode(gen_random_bytes(12), 'hex');
+CREATE UNIQUE INDEX IF NOT EXISTS retros_join_token_key ON public.retros (join_token);
