@@ -51,12 +51,16 @@ function Landing() {
       <section className="mx-auto max-w-5xl px-6 pb-20 pt-10">
         <p className="eyebrow">Post-event retrospectives</p>
         <h1 className="mt-4 max-w-3xl text-5xl leading-[1.05] md:text-7xl">
-          The group retro hears from three people. This one hears from all eight.
+          Post-event feedback that includes everyone
         </h1>
         <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-          After a trade show or conference, Debrief interviews the organizer to build the question
-          set, interviews each person privately and asynchronously, then writes one honest report
-          with action items someone actually owns.
+          Group retros only hear from whoever talks first and loudest. Debrief interviews every
+          person who was there, privately and one at a time, then turns their honest answers into a
+          single report with action items someone owns.
+        </p>
+        <p className="mt-4 max-w-2xl text-lg leading-relaxed">
+          In a typical group retro, two or three people do the talking. Debrief interviews everyone
+          individually, every time.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Button asChild size="lg">
