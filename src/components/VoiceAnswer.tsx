@@ -24,6 +24,11 @@ export function VoiceAnswer({ value, onChange, placeholder, disabled }: Props) {
     const w = window as any;
     const SR = w.SpeechRecognition || w.webkitSpeechRecognition;
     setSupported(!!SR);
+
+    return () => {
+      recognitionRef.current?.stop();
+      recognitionRef.current = null;
+    };
   }, []);
 
   const start = () => {

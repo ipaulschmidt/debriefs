@@ -2,10 +2,23 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import { getInterview, interviewNext } from "@/lib/interview.functions";
+import { Pencil } from "lucide-react";
+import {
+  getInterview,
+  interviewNext,
+  updateInterviewAnswer,
+} from "@/lib/interview.functions";
 import { SPINE } from "@/config/spine";
 import { VoiceAnswer } from "@/components/VoiceAnswer";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/i/$token")({
   ssr: false,
@@ -35,6 +48,9 @@ function Interview() {
   const [mode, setMode] = useState<"text" | "voice">("text");
   const [closing, setClosing] = useState<string | null>(null);
   const [started, setStarted] = useState(false);
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editedAnswer, setEditedAnswer] = useState("");
 
   const { data, isLoading } = useQuery({
     queryKey: ["interview", token],
@@ -53,12 +69,26 @@ function Interview() {
           ...(draft ? { answer: draft, answerMode: mode } : {}),
         },
       }),
-    onSuccess: (res) => {
+    onSuccess: async (res) => {
       setDraft("");
       if (res.done) setClosing(res.closing ?? "That's everything. Thank you.");
-      qc.invalidateQueries({ queryKey: ["interview", token] });
+      await qc.invalidateQueries({ queryKey: ["interview", token] });
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "Something went wrong"),
+  });
+
+  const saveEdit = useMutation({
+    mutationFn: () => {
+      if (!editingId) throw new Error("Choose an answer to edit.");
+      return updateInterviewAnswer({ data: { token, turnId: editingId, answer: editedAnswer } });
+    },
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: ["interview", token] });
+      setEditingId(null);
+      setEditedAnswer("");
+      toast.success("Answer updated");
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Could not update the answer"),
   });
 
   if (isLoading) {
@@ -83,6 +113,7 @@ function Interview() {
   const minutesLeft = Math.max(1, Math.round((SPINE.length - currentArea + 1) * 1.2));
   const sectionsLeft = Math.max(1, SPINE.length - currentArea + 1);
   const showProgress = (started || turns.length > 0) && !done;
+  const previousTurns = turns.filter((turn) => Boolean(turn.answer_text));
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-12 pb-32 sm:pb-12">
@@ -178,20 +209,9 @@ function Interview() {
         </>
       ) : null}
 
-      <div className="mt-10 space-y-8">
-        {turns.map((t) => (
-          <div key={t.id} className="space-y-2">
-            <p className="text-xl leading-snug">{t.question_text}</p>
-            {t.answer_text ? (
-              <div className="rounded-md border bg-card p-3">
-                <p className="text-sm leading-relaxed text-muted-foreground">{t.answer_text}</p>
-              </div>
-            ) : null}
-          </div>
-        ))}
-
+      <div className="mt-10">
         {done ? (
-          <div className="rule-top pt-8">
+          <div className="rule-top animate-in fade-in slide-in-from-bottom-2 pt-8 duration-300">
             <p className="text-xl leading-relaxed">
               {closing ?? "You've finished this interview. Thank you."}
             </p>
@@ -201,26 +221,109 @@ function Interview() {
               said it.
             </p>
           </div>
-        ) : awaitingAnswer ? (
-          <div className="space-y-3">
-            <VoiceAnswer
-              value={draft}
-              onChange={(v, m) => {
-                setDraft(v);
-                setMode(m);
-              }}
-              disabled={next.isPending}
-            />
-            <Button onClick={() => next.mutate()} disabled={!draft.trim() || next.isPending}>
-              {next.isPending ? "Thinking…" : "Send answer"}
-            </Button>
-          </div>
-        ) : turns.length ? (
-          <Button onClick={() => next.mutate()} disabled={next.isPending}>
-            {next.isPending ? "Thinking…" : "Next question"}
-          </Button>
+        ) : awaitingAnswer && current ? (
+          <section
+            key={current.id}
+            aria-labelledby={`question-${current.id}`}
+            className="animate-in fade-in slide-in-from-bottom-2 duration-300 motion-reduce:animate-none"
+          >
+            <p className="eyebrow">
+              {current.was_probe ? "A quick follow-up" : currentAreaTitle || `Section ${currentArea}`}
+            </p>
+            <h2 id={`question-${current.id}`} className="mt-3 text-3xl leading-snug sm:text-4xl">
+              {current.question_text}
+            </h2>
+            <div className="mt-7 space-y-4">
+              <VoiceAnswer
+                value={draft}
+                onChange={(v, m) => {
+                  setDraft(v);
+                  setMode(m);
+                }}
+                disabled={next.isPending}
+              />
+              <div className="flex flex-wrap items-center gap-3">
+                <Button onClick={() => next.mutate()} disabled={!draft.trim() || next.isPending}>
+                  {next.isPending ? "Preparing the next question…" : "Submit answer"}
+                </Button>
+                {previousTurns.length ? (
+                  <Button variant="ghost" onClick={() => setReviewOpen(true)} disabled={next.isPending}>
+                    Review previous answers
+                  </Button>
+                ) : null}
+              </div>
+              <p aria-live="polite" className="min-h-5 text-xs text-muted-foreground">
+                {next.isPending ? "Your answer is saved. Preparing what comes next." : ""}
+              </p>
+            </div>
+          </section>
         ) : null}
       </div>
+
+      <Dialog open={reviewOpen} onOpenChange={setReviewOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Review previous answers</DialogTitle>
+            <DialogDescription>
+              You can correct an earlier answer. Questions already asked will not change.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="max-h-[65vh] space-y-6 overflow-y-auto pr-2">
+            {previousTurns.map((turn) => (
+              <div key={turn.id} className="rule-top space-y-2 pt-4 first:border-t-0 first:pt-0">
+                <div className="flex items-start gap-3">
+                  <p className="flex-1 text-sm font-medium leading-relaxed">{turn.question_text}</p>
+                  {editingId !== turn.id ? (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      aria-label="Edit this answer"
+                      title="Edit this answer"
+                      onClick={() => {
+                        setEditingId(turn.id);
+                        setEditedAnswer(turn.answer_text ?? "");
+                      }}
+                    >
+                      <Pencil />
+                    </Button>
+                  ) : null}
+                </div>
+                {editingId === turn.id ? (
+                  <div className="space-y-2">
+                    <Textarea
+                      autoFocus
+                      value={editedAnswer}
+                      onChange={(event) => setEditedAnswer(event.target.value)}
+                      disabled={saveEdit.isPending}
+                      className="min-h-28 bg-card text-base leading-relaxed"
+                    />
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        onClick={() => saveEdit.mutate()}
+                        disabled={!editedAnswer.trim() || saveEdit.isPending}
+                      >
+                        {saveEdit.isPending ? "Saving…" : "Save answer"}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setEditingId(null)}
+                        disabled={saveEdit.isPending}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm leading-relaxed text-muted-foreground">{turn.answer_text}</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </main>
   );
 }
