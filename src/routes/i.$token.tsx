@@ -41,7 +41,21 @@ export const Route = createFileRoute("/i/$token")({
   component: Interview,
 });
 
+/** Plain section names shown to people taking the survey. */
+const PUBLIC_SECTION_TITLES: Record<number, string> = {
+  1: "Your role",
+  2: "Your gut verdict",
+  3: "What to keep",
+  4: "What got in the way",
+  5: "At the booth",
+  6: "The wider event",
+  7: "Logistics and staffing",
+  8: "Leads",
+  9: "Last few questions",
+};
+
 function Interview() {
+
   const { token } = Route.useParams();
   const qc = useQueryClient();
   const [draft, setDraft] = useState("");
@@ -109,11 +123,12 @@ function Interview() {
   const done = data.participant.status === "complete" || closing;
 
   const currentArea = Math.min(Math.max(current?.spine_area ?? 1, 1), SPINE.length);
-  const currentAreaTitle = SPINE[currentArea - 1]?.title ?? "";
+  const currentAreaTitle = PUBLIC_SECTION_TITLES[currentArea] ?? SPINE[currentArea - 1]?.title ?? "";
   const minutesLeft = Math.max(1, Math.round((SPINE.length - currentArea + 1) * 1.2));
   const sectionsLeft = Math.max(1, SPINE.length - currentArea + 1);
   const showProgress = (started || turns.length > 0) && !done;
   const previousTurns = turns.filter((turn) => Boolean(turn.answer_text));
+
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-12 pb-32 sm:pb-12">
@@ -225,7 +240,11 @@ function Interview() {
               />
               <div className="flex flex-wrap items-center gap-3">
                 <Button onClick={() => next.mutate()} disabled={!draft.trim() || next.isPending}>
-                  {next.isPending ? "Preparing the next question…" : "Submit answer"}
+                  {next.isPending
+                    ? "Preparing the next question…"
+                    : next.isError
+                      ? "Try again"
+                      : "Submit answer"}
                 </Button>
                 {previousTurns.length ? (
                   <Button variant="ghost" onClick={() => setReviewOpen(true)} disabled={next.isPending}>
@@ -234,8 +253,13 @@ function Interview() {
                 ) : null}
               </div>
               <p aria-live="polite" className="min-h-5 text-xs text-muted-foreground">
-                {next.isPending ? "Your answer is saved. Preparing what comes next." : ""}
+                {next.isPending
+                  ? "Your answer is saved. Preparing what comes next."
+                  : next.isError
+                    ? "That didn't go through — your answer is still here. Press Try again."
+                    : ""}
               </p>
+
             </div>
           </section>
         ) : null}
