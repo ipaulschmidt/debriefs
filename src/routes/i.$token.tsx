@@ -163,13 +163,13 @@ function Interview() {
         <>
           <div className="mt-6 space-y-3 text-base leading-relaxed">
             <p>
-              A private conversation about how the event actually went. About ten minutes — type
-              or speak, stop and come back anytime.
+              This is a quick survey about how the event went. It takes about ten minutes, and
+              you can type your answers or speak them.
             </p>
             <p className="text-sm text-muted-foreground">
-              Nobody sees your individual answers — the report describes what happened without
-              naming anyone. Be straight and specific: a moment, a number or an example is worth
-              more than a summary.
+              Your answers are private. Nobody sees what you say, and the final report never
+              names anyone. Be specific — one moment, number or example is worth more than a
+              summary.
             </p>
             {data.retro.interview_deadline ? (
               <p className="text-sm text-muted-foreground">
@@ -185,7 +185,7 @@ function Interview() {
             }}
             disabled={next.isPending}
           >
-            {next.isPending ? "Starting…" : "Start the interview"}
+            {next.isPending ? "Starting…" : "Start the survey"}
           </Button>
         </>
       ) : null}
@@ -194,7 +194,7 @@ function Interview() {
         {done ? (
           <div className="rule-top animate-in fade-in slide-in-from-bottom-2 pt-8 duration-300">
             <p className="text-xl leading-relaxed">
-              {closing ?? "You've finished this interview. Thank you."}
+              {closing ?? "You've finished the survey. Thank you."}
             </p>
             <p className="mt-3 text-sm text-muted-foreground">
               Once everyone has finished{data.retro.interview_deadline ? ` or the ${data.retro.interview_deadline} deadline passes` : ""}, the answers are
