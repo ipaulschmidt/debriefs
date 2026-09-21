@@ -75,6 +75,7 @@ function Setup() {
         { email: "", dept: "" },
       ]);
       invalidate();
+      toast.success("Added — their interview is open. Copy each link below and send it.");
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "Could not add"),
   });
