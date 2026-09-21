@@ -131,3 +131,60 @@ export const getAccessLog = createServerFn({ method: "GET" })
       .order("created_at", { ascending: false });
     return log ?? [];
   });
+
+export const exportTranscripts = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { retroId: string; reason: string }) => {
+    if (!input.reason || input.reason.trim().length < 10) {
+      throw new Error("Please give a reason of at least 10 characters.");
+    }
+    return input;
+  })
+  .handler(async ({ data, context }) => {
+    await assertAttributionAdmin(context.supabase, data.retroId, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    await supabaseAdmin.from("attribution_access_log").insert({
+      retro_id: data.retroId,
+      admin_user_id: context.userId,
+      target_type: "participant",
+      target_id: "all",
+      reason_text: `Full export — ${data.reason.trim()}`,
+    });
+
+    const { data: retro } = await supabaseAdmin
+      .from("retros")
+      .select("name, event_date, interview_deadline")
+      .eq("id", data.retroId)
+      .single();
+
+    const { data: participants } = await supabaseAdmin
+      .from("participants")
+      .select("id, name, email, role_at_event, status, completeness_score, low_completeness_flag, completed_at")
+      .eq("retro_id", data.retroId)
+      .order("created_at");
+
+    const ids = (participants ?? []).map((p) => p.id);
+    const { data: turns } = ids.length
+      ? await supabaseAdmin
+          .from("interview_turns")
+          .select("participant_id, sequence, spine_area, question_text, answer_text, answer_mode, answer_quality, was_probe, probe_type")
+          .in("participant_id", ids)
+          .order("sequence")
+      : { data: [] as any[] };
+
+    const { data: metrics } = await supabaseAdmin
+      .from("retro_metrics")
+      .select("label, value, prior_year_value, notes")
+      .eq("retro_id", data.retroId)
+      .order("created_at");
+
+    return {
+      retro,
+      metrics: metrics ?? [],
+      people: (participants ?? []).map((p) => ({
+        ...p,
+        turns: (turns ?? []).filter((t) => t.participant_id === p.id),
+      })),
+    };
+  });
