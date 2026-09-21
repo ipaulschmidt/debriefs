@@ -133,7 +133,7 @@ function Setup() {
             </Button>
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
-            Press “Open interviews” below before you share it, so the link is live.
+            The link is live right away — nothing else to press.
           </p>
         </section>
 
@@ -229,10 +229,6 @@ function Setup() {
               Add these people
             </Button>
           </div>
-
-          <Button className="mt-6" onClick={() => invite.mutate()} disabled={invite.isPending}>
-            Open interviews
-          </Button>
         </section>
 
         <section className="rule-top pt-8">
