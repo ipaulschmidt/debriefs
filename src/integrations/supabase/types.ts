@@ -395,6 +395,7 @@ export type Database = {
           id: string
           intake_summary: Json | null
           interview_deadline: string | null
+          join_token: string
           name: string
           previous_retro_id: string | null
           status: string
@@ -407,6 +408,7 @@ export type Database = {
           id?: string
           intake_summary?: Json | null
           interview_deadline?: string | null
+          join_token?: string
           name: string
           previous_retro_id?: string | null
           status?: string
@@ -419,6 +421,7 @@ export type Database = {
           id?: string
           intake_summary?: Json | null
           interview_deadline?: string | null
+          join_token?: string
           name?: string
           previous_retro_id?: string | null
           status?: string

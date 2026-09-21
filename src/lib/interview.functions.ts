@@ -232,3 +232,66 @@ async function finalizeInterview(
     .eq("id", participantId);
 }
 
+
+/**
+ * Open team link: someone arrives with the shared link, gives their email and
+ * (optionally) department, and gets their own private interview.
+ */
+export const joinRetro = createServerFn({ method: "POST" })
+  .inputValidator((input: { joinToken: string; email: string; dept?: string }) => {
+    const email = input.email.trim().toLowerCase();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw new Error("Please enter a valid email address.");
+    return { ...input, email };
+  })
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: retro } = await supabaseAdmin
+      .from("retros")
+      .select("id, name, status")
+      .eq("join_token", data.joinToken)
+      .maybeSingle();
+    if (!retro) throw new Error("This link is not valid.");
+
+    const { data: existing } = await supabaseAdmin
+      .from("participants")
+      .select("id, invite_token, role_at_event")
+      .eq("retro_id", retro.id)
+      .ilike("email", data.email)
+      .maybeSingle();
+
+    if (existing) {
+      if (data.dept && !existing.role_at_event) {
+        await supabaseAdmin
+          .from("participants")
+          .update({ role_at_event: data.dept })
+          .eq("id", existing.id);
+      }
+      return { inviteToken: existing.invite_token as string };
+    }
+
+    const { data: created, error } = await supabaseAdmin
+      .from("participants")
+      .insert({
+        retro_id: retro.id,
+        email: data.email,
+        name: data.email.split("@")[0] ?? data.email,
+        role_at_event: data.dept?.trim() || null,
+      })
+      .select("invite_token")
+      .single();
+    if (error) throw new Error(error.message);
+    return { inviteToken: created.invite_token as string };
+  });
+
+export const getJoinInfo = createServerFn({ method: "GET" })
+  .inputValidator((input: { joinToken: string }) => input)
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: retro } = await supabaseAdmin
+      .from("retros")
+      .select("name, interview_deadline")
+      .eq("join_token", data.joinToken)
+      .maybeSingle();
+    return retro ? { name: retro.name as string, interview_deadline: retro.interview_deadline as string | null } : null;
+  });

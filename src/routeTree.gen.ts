@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as ITokenRouteImport } from './routes/i.$token'
+import { Route as JTokenRouteImport } from './routes/j.$token'
 import { Route as AuthenticatedRetrosIndexRouteImport } from './routes/_authenticated/retros/index'
 import { Route as AuthenticatedRetrosRetroIdIndexRouteImport } from './routes/_authenticated/retros/$retroId/index'
 import { Route as AuthenticatedRetrosRetroIdAccessLogRouteImport } from './routes/_authenticated/retros/$retroId/access-log'
@@ -44,6 +45,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
 const ITokenRoute = ITokenRouteImport.update({
   id: '/i/$token',
   path: '/i/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JTokenRoute = JTokenRouteImport.update({
+  id: '/j/$token',
+  path: '/j/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRetrosIndexRoute =
@@ -94,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/i/$token': typeof ITokenRoute
+  '/j/$token': typeof JTokenRoute
   '/retros/': typeof AuthenticatedRetrosIndexRoute
   '/retros/$retroId/access-log': typeof AuthenticatedRetrosRetroIdAccessLogRoute
   '/retros/$retroId/intake': typeof AuthenticatedRetrosRetroIdIntakeRoute
@@ -107,6 +114,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/i/$token': typeof ITokenRoute
+  '/j/$token': typeof JTokenRoute
   '/retros': typeof AuthenticatedRetrosIndexRoute
   '/retros/$retroId/access-log': typeof AuthenticatedRetrosRetroIdAccessLogRoute
   '/retros/$retroId/intake': typeof AuthenticatedRetrosRetroIdIntakeRoute
@@ -122,6 +130,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/i/$token': typeof ITokenRoute
+  '/j/$token': typeof JTokenRoute
   '/_authenticated/retros/': typeof AuthenticatedRetrosIndexRoute
   '/_authenticated/retros/$retroId/access-log': typeof AuthenticatedRetrosRetroIdAccessLogRoute
   '/_authenticated/retros/$retroId/intake': typeof AuthenticatedRetrosRetroIdIntakeRoute
@@ -137,6 +146,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/dashboard'
     | '/i/$token'
+    | '/j/$token'
     | '/retros/'
     | '/retros/$retroId/access-log'
     | '/retros/$retroId/intake'
@@ -150,6 +160,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/dashboard'
     | '/i/$token'
+    | '/j/$token'
     | '/retros'
     | '/retros/$retroId/access-log'
     | '/retros/$retroId/intake'
@@ -164,6 +175,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/dashboard'
     | '/i/$token'
+    | '/j/$token'
     | '/_authenticated/retros/'
     | '/_authenticated/retros/$retroId/access-log'
     | '/_authenticated/retros/$retroId/intake'
@@ -178,6 +190,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ITokenRoute: typeof ITokenRoute
+  JTokenRoute: typeof JTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -215,6 +228,13 @@ declare module '@tanstack/react-router' {
       path: '/i/$token'
       fullPath: '/i/$token'
       preLoaderRoute: typeof ITokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/j/$token': {
+      id: '/j/$token'
+      path: '/j/$token'
+      fullPath: '/j/$token'
+      preLoaderRoute: typeof JTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/retros/': {
@@ -301,6 +321,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ITokenRoute: ITokenRoute,
+  JTokenRoute: JTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
