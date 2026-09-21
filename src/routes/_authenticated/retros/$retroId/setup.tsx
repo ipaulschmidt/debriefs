@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { DEPARTMENTS } from "@/config/departments";
+import { shareOrigin } from "@/lib/share-url";
 
 export const Route = createFileRoute("/_authenticated/retros/$retroId/setup")({
   head: () => ({
@@ -52,8 +53,8 @@ function Setup() {
   const [m, setM] = useState({ label: "", value: "", prior: "", notes: "" });
 
   const addPerson = useMutation({
-    mutationFn: () =>
-      upsertParticipants({
+    mutationFn: async () => {
+      await upsertParticipants({
         data: {
           retroId,
           participants: emails
@@ -63,7 +64,10 @@ function Setup() {
               ...(p.dept ? { role_at_event: p.dept } : {}),
             })),
         },
-      }),
+      });
+      // Adding someone opens their interview straight away — no extra step.
+      await sendInvites({ data: { retroId } });
+    },
     onSuccess: () => {
       setEmails([
         { email: "", dept: "" },
@@ -71,6 +75,7 @@ function Setup() {
         { email: "", dept: "" },
       ]);
       invalidate();
+      toast.success("Added — their interview is open. Copy each link below and send it.");
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "Could not add"),
   });
@@ -98,15 +103,7 @@ function Setup() {
     mutationFn: (id: string) => removeMetric({ data: { id } }),
     onSuccess: invalidate,
   });
-  const invite = useMutation({
-    mutationFn: () => sendInvites({ data: { retroId } }),
-    onSuccess: () => {
-      invalidate();
-      toast.success("Interviews are open. Share each person's private link below.");
-    },
-  });
-
-  const origin = typeof window === "undefined" ? "" : window.location.origin;
+  const origin = shareOrigin();
 
   return (
     <>
@@ -137,7 +134,7 @@ function Setup() {
             </Button>
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
-            Press “Open interviews” below before you share it, so the link is live.
+            The link is live right away — nothing else to press.
           </p>
         </section>
 
@@ -233,10 +230,6 @@ function Setup() {
               Add these people
             </Button>
           </div>
-
-          <Button className="mt-6" onClick={() => invite.mutate()} disabled={invite.isPending}>
-            Open interviews
-          </Button>
         </section>
 
         <section className="rule-top pt-8">
