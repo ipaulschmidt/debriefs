@@ -240,7 +240,11 @@ function Interview() {
               />
               <div className="flex flex-wrap items-center gap-3">
                 <Button onClick={() => next.mutate()} disabled={!draft.trim() || next.isPending}>
-                  {next.isPending ? "Preparing the next question…" : "Submit answer"}
+                  {next.isPending
+                    ? "Preparing the next question…"
+                    : next.isError
+                      ? "Try again"
+                      : "Submit answer"}
                 </Button>
                 {previousTurns.length ? (
                   <Button variant="ghost" onClick={() => setReviewOpen(true)} disabled={next.isPending}>
@@ -249,8 +253,13 @@ function Interview() {
                 ) : null}
               </div>
               <p aria-live="polite" className="min-h-5 text-xs text-muted-foreground">
-                {next.isPending ? "Your answer is saved. Preparing what comes next." : ""}
+                {next.isPending
+                  ? "Your answer is saved. Preparing what comes next."
+                  : next.isError
+                    ? "That didn't go through — your answer is still here. Press Try again."
+                    : ""}
               </p>
+
             </div>
           </section>
         ) : null}
