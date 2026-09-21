@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import { getAccessLog, revealTranscript } from "@/lib/attribution.functions";
+import { exportTranscripts, getAccessLog, revealTranscript } from "@/lib/attribution.functions";
 import { getRetroBundle } from "@/lib/retros.functions";
 import { RetroNav } from "@/components/RetroNav";
 import { Button } from "@/components/ui/button";
@@ -61,6 +61,75 @@ function AccessLog() {
     onError: (e) => toast.error(e instanceof Error ? e.message : "Could not open the transcript"),
   });
 
+  const [exportOpen, setExportOpen] = useState(false);
+  const [exportReason, setExportReason] = useState("");
+
+  const download = (name: string, text: string, type: string) => {
+    const url = URL.createObjectURL(new Blob([text], { type }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const csvCell = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+
+  const exportAll = useMutation({
+    mutationFn: () => exportTranscripts({ data: { retroId, reason: exportReason } }),
+    onSuccess: (res) => {
+      const slug = (res.retro?.name ?? "retro").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      const md = [
+        `# ${res.retro?.name ?? "Retro"} — every question and answer`,
+        res.retro?.event_date ? `Event date: ${res.retro.event_date}` : "",
+        "",
+        ...(res.metrics.length
+          ? [
+              "## Numbers entered by the organiser",
+              ...res.metrics.map(
+                (m) =>
+                  `- ${m.label}: ${m.value}${m.prior_year_value ? ` (last time ${m.prior_year_value})` : ""}${m.notes ? ` — ${m.notes}` : ""}`,
+              ),
+              "",
+            ]
+          : []),
+        ...res.people.flatMap((p) => [
+          `## ${p.email}${p.role_at_event ? ` · ${p.role_at_event}` : ""}`,
+          `Status: ${p.status}${p.completeness_score != null ? ` · full answers ${Math.round(Number(p.completeness_score) * 100)}%` : ""}`,
+          "",
+          ...p.turns.flatMap((t) => [
+            `**Q${t.sequence}${t.was_probe ? " (follow-up)" : ""}:** ${t.question_text}`,
+            "",
+            t.answer_text ?? "_no answer_",
+            "",
+          ]),
+        ]),
+      ].join("\n");
+
+      const csv = [
+        ["participant_email", "department", "sequence", "section", "follow_up", "question", "answer", "answer_quality"]
+          .map(csvCell)
+          .join(","),
+        ...res.people.flatMap((p) =>
+          p.turns.map((t) =>
+            [p.email, p.role_at_event, t.sequence, t.spine_area, t.was_probe ? "yes" : "no", t.question_text, t.answer_text, t.answer_quality]
+              .map(csvCell)
+              .join(","),
+          ),
+        ),
+      ].join("\n");
+
+      download(`${slug}-transcripts.md`, md, "text/markdown");
+      download(`${slug}-transcripts.csv`, csv, "text/csv");
+      navigator.clipboard.writeText(md).catch(() => undefined);
+      setExportOpen(false);
+      setExportReason("");
+      refetch();
+      toast.success("Downloaded as text and spreadsheet, and copied to your clipboard.");
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Could not export"),
+  });
+
   return (
     <>
       <RetroNav retroId={retroId} name={bundle?.retro?.name ?? undefined} />
@@ -89,6 +158,22 @@ function AccessLog() {
             ))}
           </div>
         </section>
+
+        {bundle?.isAttributionAdmin ? (
+          <section className="rule-top pt-8">
+            <p className="eyebrow">Export</p>
+            <h3 className="mt-2 text-2xl">Every question and answer</h3>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Download the complete written record of every interview — as a text document and as a
+              spreadsheet, with each person's email and department — so you can write your own
+              report if ours doesn't do the job. Like any look at individual answers, it needs a
+              reason and is recorded above.
+            </p>
+            <Button className="mt-4" onClick={() => setExportOpen(true)}>
+              Export everything
+            </Button>
+          </section>
+        ) : null}
 
         {bundle?.isAttributionAdmin ? (
           <section className="rule-top pt-8">
