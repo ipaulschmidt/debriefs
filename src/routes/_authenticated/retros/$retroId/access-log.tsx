@@ -244,6 +244,31 @@ function AccessLog() {
           )}
         </DialogContent>
       </Dialog>
+
+      <Dialog open={exportOpen} onOpenChange={setExportOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Export every question and answer</DialogTitle>
+            <DialogDescription>
+              This includes who said what. Give a reason — it's recorded with your name and the
+              time, and shown on the access log.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Textarea
+              value={exportReason}
+              onChange={(e) => setExportReason(e.target.value)}
+              placeholder="Why do you need the full record? (at least 10 characters)"
+            />
+            <Button
+              onClick={() => exportAll.mutate()}
+              disabled={exportReason.trim().length < 10 || exportAll.isPending}
+            >
+              {exportAll.isPending ? "Preparing…" : "Record reason and download"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
