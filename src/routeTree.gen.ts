@@ -12,7 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as ITokenRouteImport } from './routes/i.$token'
 import { Route as JTokenRouteImport } from './routes/j.$token'
 import { Route as AuthenticatedRetrosIndexRouteImport } from './routes/_authenticated/retros/index'
@@ -37,9 +37,9 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const ITokenRoute = ITokenRouteImport.update({
@@ -98,7 +98,7 @@ const AuthenticatedRetrosRetroIdSetupRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/i/$token': typeof ITokenRoute
   '/j/$token': typeof JTokenRoute
   '/retros/': typeof AuthenticatedRetrosIndexRoute
@@ -112,7 +112,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/i/$token': typeof ITokenRoute
   '/j/$token': typeof JTokenRoute
   '/retros': typeof AuthenticatedRetrosIndexRoute
@@ -128,7 +128,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
-  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/i/$token': typeof ITokenRoute
   '/j/$token': typeof JTokenRoute
   '/_authenticated/retros/': typeof AuthenticatedRetrosIndexRoute
@@ -144,7 +144,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
-    | '/dashboard'
+    | '/admin'
     | '/i/$token'
     | '/j/$token'
     | '/retros/'
@@ -158,7 +158,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
-    | '/dashboard'
+    | '/admin'
     | '/i/$token'
     | '/j/$token'
     | '/retros'
@@ -173,7 +173,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
-    | '/_authenticated/dashboard'
+    | '/_authenticated/admin'
     | '/i/$token'
     | '/j/$token'
     | '/_authenticated/retros/'
@@ -216,11 +216,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/i/$token': {
@@ -290,7 +290,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedRetrosIndexRoute: typeof AuthenticatedRetrosIndexRoute
   AuthenticatedRetrosRetroIdAccessLogRoute: typeof AuthenticatedRetrosRetroIdAccessLogRoute
   AuthenticatedRetrosRetroIdIntakeRoute: typeof AuthenticatedRetrosRetroIdIntakeRoute
@@ -301,7 +301,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedRetrosIndexRoute: AuthenticatedRetrosIndexRoute,
   AuthenticatedRetrosRetroIdAccessLogRoute:
     AuthenticatedRetrosRetroIdAccessLogRoute,
