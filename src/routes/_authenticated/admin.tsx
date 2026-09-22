@@ -9,12 +9,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
     meta: [
-      { title: "Dashboard — Debrief" },
+      { title: "Admin — Debrief" },
       {
         name: "description",
         content: "Every retro, how far along it is, and what keeps coming up across events.",
       },
-      { property: "og:title", content: "Dashboard — Debrief" },
+      { property: "og:title", content: "Admin — Debrief" },
       {
         property: "og:description",
         content: "Every retro, how far along it is, and what keeps coming up across events.",
