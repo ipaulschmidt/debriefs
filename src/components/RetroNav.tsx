@@ -17,8 +17,8 @@ export function RetroNav({ retroId, name }: { retroId: string; name?: string | u
           <Link to="/retros" className="eyebrow hover:underline">
             ← All retros
           </Link>
-          <Link to="/dashboard" className="eyebrow hover:underline">
-            Dashboard
+          <Link to="/admin" className="eyebrow hover:underline">
+            Admin
           </Link>
         </div>
         <h1 className="mt-2 text-3xl">{name ?? "Retro"}</h1>

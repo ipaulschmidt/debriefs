@@ -73,8 +73,8 @@ function RetroList() {
         <section>
           <div className="flex items-baseline justify-between gap-4">
             <p className="eyebrow">Your retros</p>
-            <Link to="/dashboard" className="text-sm text-muted-foreground hover:underline">
-              Dashboard →
+            <Link to="/admin" className="text-sm text-muted-foreground hover:underline">
+              Admin →
             </Link>
           </div>
           <h1 className="mt-2 text-4xl">Every event, one honest report</h1>
