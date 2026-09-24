@@ -19,13 +19,8 @@ async function assertAttributionAdmin(
 
 export const revealFinding = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(
-    (input: { retroId: string; section: string; index: number; reason: string }) => {
-      if (!input.reason || input.reason.trim().length < 10) {
-        throw new Error("Please give a reason of at least 10 characters.");
-      }
-      return input;
-    },
+  .inputValidator((input: { retroId: string; section: string; index: number; reason?: string }) =>
+    input,
   )
   .handler(async ({ data, context }) => {
     await assertAttributionAdmin(context.supabase, data.retroId, context.userId);
@@ -52,7 +47,7 @@ export const revealFinding = createServerFn({ method: "POST" })
       admin_user_id: context.userId,
       target_type: "finding",
       target_id: `${data.section}#${data.index}`,
-      reason_text: data.reason.trim(),
+      reason_text: data.reason?.trim() || "Viewed from report",
     });
 
     if (!ids.length) return { sources: [] };
