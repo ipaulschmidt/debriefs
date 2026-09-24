@@ -17,6 +17,8 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { DEPARTMENTS } from "@/config/departments";
 import { shareOrigin } from "@/lib/share-url";
+import { exportTranscripts, revealTranscript } from "@/lib/attribution.functions";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/_authenticated/retros/$retroId/setup")({
   head: () => ({
@@ -104,6 +106,78 @@ function Setup() {
     onSuccess: invalidate,
   });
   const origin = shareOrigin();
+  const isAdmin = !!data?.isAttributionAdmin;
+
+  const [viewing, setViewing] = useState<{ name: string; email: string } | null>(null);
+  const [transcript, setTranscript] =
+    useState<Awaited<ReturnType<typeof revealTranscript>> | null>(null);
+  const view = useMutation({
+    mutationFn: (participantId: string) =>
+      revealTranscript({ data: { retroId, participantId } }),
+    onSuccess: setTranscript,
+    onError: (e) => {
+      setViewing(null);
+      toast.error(e instanceof Error ? e.message : "Could not open their answers");
+    },
+  });
+
+  const download = (name: string, text: string, type: string) => {
+    const url = URL.createObjectURL(new Blob([text], { type }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+  const csvCell = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const exportAll = useMutation({
+    mutationFn: () => exportTranscripts({ data: { retroId } }),
+    onSuccess: (res) => {
+      const slug = (res.retro?.name ?? "retro").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      const md = [
+        `# ${res.retro?.name ?? "Retro"} — every question and answer`,
+        res.retro?.event_date ? `Event date: ${res.retro.event_date}` : "",
+        "",
+        ...(res.metrics.length
+          ? [
+              "## Numbers",
+              ...res.metrics.map(
+                (x) =>
+                  `- ${x.label}: ${x.value}${x.prior_year_value ? ` (last time ${x.prior_year_value})` : ""}${x.notes ? ` — ${x.notes}` : ""}`,
+              ),
+              "",
+            ]
+          : []),
+        ...res.people.flatMap((p) => [
+          `## ${p.email}${p.role_at_event ? ` · ${p.role_at_event}` : ""}`,
+          `Status: ${p.status}`,
+          "",
+          ...p.turns.flatMap((t) => [
+            `**Q${t.sequence}${t.was_probe ? " (follow-up)" : ""}:** ${t.question_text}`,
+            "",
+            t.answer_text ?? "_no answer_",
+            "",
+          ]),
+        ]),
+      ].join("\n");
+      const csv = [
+        ["participant_email", "department", "sequence", "section", "follow_up", "question", "answer"]
+          .map(csvCell)
+          .join(","),
+        ...res.people.flatMap((p) =>
+          p.turns.map((t) =>
+            [p.email, p.role_at_event, t.sequence, t.spine_area, t.was_probe ? "yes" : "no", t.question_text, t.answer_text]
+              .map(csvCell)
+              .join(","),
+          ),
+        ),
+      ].join("\n");
+      download(`${slug}-answers.md`, md, "text/markdown");
+      download(`${slug}-answers.csv`, csv, "text/csv");
+      toast.success("Downloaded as a document and a spreadsheet.");
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Could not export"),
+  });
 
   return (
     <>
@@ -162,6 +236,18 @@ function Setup() {
                   <Badge variant={person.status === "complete" ? "secondary" : "outline"}>
                     {person.status.replace(/_/g, " ")}
                   </Badge>
+                  {isAdmin && person.status !== "not_started" ? (
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        setTranscript(null);
+                        setViewing({ name: person.name, email: person.email });
+                        view.mutate(person.id);
+                      }}
+                    >
+                      View results
+                    </Button>
+                  ) : null}
                   <Button variant="ghost" size="sm" onClick={() => delPerson.mutate(person.id)}>
                     Remove
                   </Button>
@@ -295,11 +381,49 @@ function Setup() {
             <li>It takes ten to fifteen minutes, and they can type or speak.</li>
             <li>The report describes what happened, never who said it.</li>
             <li>A theme needs two separate interviews before it appears in the report.</li>
-            <li>An admin can review individual answers for a stated reason, and every review is recorded.</li>
+            <li>Only the admin can see individual answers.</li>
             <li>The deadline, and when they'll see the report.</li>
           </ul>
         </section>
+
+        {isAdmin ? (
+          <section className="rule-top pt-8">
+            <p className="eyebrow">Export</p>
+            <h2 className="mt-2 text-3xl">Every question and answer</h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Download everyone's answers as a document and a spreadsheet, with each person's email
+              and department — handy if you want to write your own report.
+            </p>
+            <Button className="mt-4" onClick={() => exportAll.mutate()} disabled={exportAll.isPending}>
+              {exportAll.isPending ? "Preparing…" : "Export everything"}
+            </Button>
+          </section>
+        ) : null}
       </main>
+
+      <Dialog open={!!viewing} onOpenChange={(o) => !o && setViewing(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>{viewing?.email}</DialogTitle>
+            <DialogDescription>Their answers, in the order they were asked.</DialogDescription>
+          </DialogHeader>
+          {transcript ? (
+            <div className="max-h-[32rem] space-y-4 overflow-y-auto">
+              {transcript.turns.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No answers yet.</p>
+              ) : null}
+              {transcript.turns.map((t, i) => (
+                <div key={i}>
+                  <p className="text-sm text-muted-foreground">{t.question_text}</p>
+                  <p className="mt-1 whitespace-pre-wrap text-sm">{t.answer_text ?? "—"}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">Loading…</p>
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
