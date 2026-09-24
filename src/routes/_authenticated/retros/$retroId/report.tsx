@@ -60,7 +60,6 @@ function ReportPage() {
   });
 
   const [target, setTarget] = useState<RevealTarget | null>(null);
-  const [reason, setReason] = useState("");
   const [sources, setSources] = useState<Awaited<ReturnType<typeof revealFinding>>["sources"] | null>(
     null,
   );
@@ -77,7 +76,7 @@ function ReportPage() {
 
   const reveal = useMutation({
     mutationFn: () =>
-      revealFinding({ data: { retroId, section: target!.section, index: target!.index, reason } }),
+      revealFinding({ data: { retroId, section: target!.section, index: target!.index } }),
     onSuccess: (res) => setSources(res.sources),
     onError: (e) => toast.error(e instanceof Error ? e.message : "Could not reveal sources"),
   });
@@ -152,8 +151,8 @@ function ReportPage() {
           className="mt-2 print:hidden"
           onClick={() => {
             setSources(null);
-            setReason("");
             setTarget({ section, index, label: f.finding });
+            reveal.mutate();
           }}
         >
           Reveal sources
