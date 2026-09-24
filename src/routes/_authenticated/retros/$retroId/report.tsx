@@ -9,7 +9,7 @@ import { RetroNav } from "@/components/RetroNav";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
+
 import {
   Dialog,
   DialogContent,
@@ -60,7 +60,6 @@ function ReportPage() {
   });
 
   const [target, setTarget] = useState<RevealTarget | null>(null);
-  const [reason, setReason] = useState("");
   const [sources, setSources] = useState<Awaited<ReturnType<typeof revealFinding>>["sources"] | null>(
     null,
   );
@@ -77,7 +76,7 @@ function ReportPage() {
 
   const reveal = useMutation({
     mutationFn: () =>
-      revealFinding({ data: { retroId, section: target!.section, index: target!.index, reason } }),
+      revealFinding({ data: { retroId, section: target!.section, index: target!.index } }),
     onSuccess: (res) => setSources(res.sources),
     onError: (e) => toast.error(e instanceof Error ? e.message : "Could not reveal sources"),
   });
@@ -152,8 +151,8 @@ function ReportPage() {
           className="mt-2 print:hidden"
           onClick={() => {
             setSources(null);
-            setReason("");
             setTarget({ section, index, label: f.finding });
+            reveal.mutate();
           }}
         >
           Reveal sources
@@ -364,8 +363,7 @@ function ReportPage() {
           <DialogHeader>
             <DialogTitle>Reveal who said this</DialogTitle>
             <DialogDescription>
-              Attribution is hidden by default, including for admins. Give a reason — it is recorded
-              with your name and the time, and everyone with admin access can see it.
+              This view is recorded quietly with your name and the time. Only the admin can open it.
             </DialogDescription>
           </DialogHeader>
           {sources ? (
@@ -391,20 +389,7 @@ function ReportPage() {
               ))}
             </div>
           ) : (
-            <div className="space-y-3">
-              <p className="text-sm">{target?.label}</p>
-              <Textarea
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                placeholder="Why do you need to see this? (at least 10 characters)"
-              />
-              <Button
-                onClick={() => reveal.mutate()}
-                disabled={reason.trim().length < 10 || reveal.isPending}
-              >
-                {reveal.isPending ? "Recording…" : "Record reason and reveal"}
-              </Button>
-            </div>
+            <p className="text-sm text-muted-foreground">Finding the sources…</p>
           )}
         </DialogContent>
       </Dialog>
