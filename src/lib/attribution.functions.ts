@@ -86,12 +86,7 @@ export const revealFinding = createServerFn({ method: "POST" })
 
 export const revealTranscript = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { retroId: string; participantId: string; reason: string }) => {
-    if (!input.reason || input.reason.trim().length < 10) {
-      throw new Error("Please give a reason of at least 10 characters.");
-    }
-    return input;
-  })
+  .inputValidator((input: { retroId: string; participantId: string; reason?: string }) => input)
   .handler(async ({ data, context }) => {
     await assertAttributionAdmin(context.supabase, data.retroId, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -101,7 +96,7 @@ export const revealTranscript = createServerFn({ method: "POST" })
       admin_user_id: context.userId,
       target_type: "participant",
       target_id: data.participantId,
-      reason_text: data.reason.trim(),
+      reason_text: data.reason?.trim() || "Viewed from People tab",
     });
 
     const { data: participant } = await supabaseAdmin
@@ -134,12 +129,7 @@ export const getAccessLog = createServerFn({ method: "GET" })
 
 export const exportTranscripts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { retroId: string; reason: string }) => {
-    if (!input.reason || input.reason.trim().length < 10) {
-      throw new Error("Please give a reason of at least 10 characters.");
-    }
-    return input;
-  })
+  .inputValidator((input: { retroId: string; reason?: string }) => input)
   .handler(async ({ data, context }) => {
     await assertAttributionAdmin(context.supabase, data.retroId, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -149,7 +139,7 @@ export const exportTranscripts = createServerFn({ method: "POST" })
       admin_user_id: context.userId,
       target_type: "participant",
       target_id: "all",
-      reason_text: `Full export — ${data.reason.trim()}`,
+      reason_text: `Full export${data.reason?.trim() ? ` — ${data.reason.trim()}` : ""}`,
     });
 
     const { data: retro } = await supabaseAdmin

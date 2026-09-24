@@ -6,7 +6,6 @@ const TABS = [
   { to: "/retros/$retroId/questions", label: "Question set" },
   { to: "/retros/$retroId/setup", label: "People & numbers" },
   { to: "/retros/$retroId/report", label: "Report" },
-  { to: "/retros/$retroId/access-log", label: "Access log" },
 ] as const;
 
 export function RetroNav({ retroId, name }: { retroId: string; name?: string | undefined }) {
